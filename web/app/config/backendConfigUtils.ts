@@ -1,12 +1,17 @@
 import { RecipeListFunction, TypeInput } from "supertokens-node/types";
 import SuperTokens from "supertokens-node";
-import { SuperTokensConfig as STConfig } from "./backend";
+import {
+    SuperTokensConfig as STConfig,
+    getSuperTokensConnectionURI,
+} from "./backend";
 
 export let backendConfig = (): TypeInput => {
     return {
         supertokens: {
             // this is the location of the SuperTokens core.
-            connectionURI: STConfig.supertokens.connectionURI,
+            connectionURI:
+                STConfig.supertokens?.connectionURI ??
+                getSuperTokensConnectionURI(),
         },
         appInfo: STConfig.appInfo,
         // recipeList contains all the modules that you want to
