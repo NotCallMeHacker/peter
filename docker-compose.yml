@@ -2,7 +2,9 @@
 #
 # Usage
 #   Start everything:   docker compose up
+#   Start without web:  docker compose -f docker-compose.yml -f docker-compose.no-web.yml up
 #   Web app only:       docker compose up -d web
+#   Web app dev:        cd web && npm run dev  (no-web stack + next dev on :3000)
 #   Supabase only:      cd supabase && sh run.sh start
 #   Stop:               docker compose down
 #   Reset Supabase:     cd supabase && sh reset.sh

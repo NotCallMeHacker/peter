@@ -3,7 +3,9 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev",
+        "dev": "npm run stack:up && next dev",
+        "stack:up": "docker compose -f ../docker-compose.yml stop web && docker compose -f ../docker-compose.yml -f ../docker-compose.no-web.yml up -d",
+        "stack:down": "docker compose -f ../docker-compose.yml down",
         "build": "next build",
         "start": "next start",
         "lint": "next lint"
