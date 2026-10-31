@@ -1,0 +1,59 @@
+# One compose file for the entire stack: self-hosted Supabase (./supabase) + web app (./web).
+#
+# Usage
+#   Start everything:   docker compose up
+#   Web app only:       docker compose up -d web
+#   Supabase only:      cd supabase && sh run.sh start
+#   Stop:               docker compose down
+#   Reset Supabase:     cd supabase && sh reset.sh
+#   Keys & secrets:     cd supabase && sh utils/generate-keys.sh --update-env
+#
+# The Supabase stack is kept verbatim from upstream in ./supabase and pulled in
+# with `include`: each included file resolves its own relative paths (./volumes/...)
+# and interpolates variables from ./supabase/.env. Configure the stack there.
+# Set WEB_PORT in a root .env to change the web app's host port (default 3000).
+
+name: peter
+
+include:
+  # Optional upstream layers: uncomment to add to the merge list below.
+  # Each layer must stay in THIS SAME path list to merge with the base stack
+  # (separate include entries do not merge with each other).
+  - path:
+      - supabase/docker-compose.yml
+      # - supabase/docker-compose.logs.yml   # Logflare + Vector (Studio logs UI)
+      # - supabase/docker-compose.s3.yml     # S3 storage backend (MinIO)
+      # - supabase/docker-compose.rustfs.yml # S3 storage backend (RustFS)
+      # - supabase/docker-compose.pg15.yml   # pin Postgres 15
+      # - supabase/docker-compose.kong.yml   # Kong instead of Envoy
+
+services:
+  # Next.js web app (SuperTokens frontend + API routes)
+  # The app is hardcoded to http://localhost:3000 (see web/app/config/*),
+  # so keep the host port at 3000 unless you also change those domains.
+  web:
+    container_name: web
+    build: ./web
+    restart: unless-stopped
+    ports:
+      - ${WEB_PORT:-3000}:3000
+    environment:
+      HOSTNAME: "0.0.0.0"
+      PORT: 3000
+      SUPERTOKENS_CONNECTION_URI: ${SUPERTOKENS_CONNECTION_URI:?Set SUPERTOKENS_CONNECTION_URI in .env}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:?Set GITHUB_CLIENT_ID in .env}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:?Set GITHUB_CLIENT_SECRET in .env}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://localhost:3000/').then((r) => {if (r.status !== 200) throw new Error(r.status)})\""
+        ]
+      timeout: 10s
+      interval: 5s
+      retries: 3
+      start_period: 20s
+    # Uncomment to start only after the API gateway is healthy:
+    # depends_on:
+    #   api-gw:
+    #     condition: service_healthy

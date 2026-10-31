@@ -1,3 +1,5 @@
 *.env
+.env.*
+!.env.example
 .devcontainer/devcontainer-lock.json
 *node_modules/*
