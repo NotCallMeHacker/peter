@@ -23,6 +23,8 @@ include:
   # (separate include entries do not merge with each other).
   - path:
       - supabase/docker-compose.yml
+      - supabase/docker-compose.supertokens.yml
+    env_file: supabase/.env
       # - supabase/docker-compose.logs.yml   # Logflare + Vector (Studio logs UI)
       # - supabase/docker-compose.s3.yml     # S3 storage backend (MinIO)
       # - supabase/docker-compose.rustfs.yml # S3 storage backend (RustFS)
