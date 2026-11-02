@@ -1,9 +1,7 @@
 import { RecipeListFunction, TypeInput } from "supertokens-node/types";
 import SuperTokens from "supertokens-node";
-import {
-    SuperTokensConfig as STConfig,
-    getSuperTokensConnectionURI,
-} from "./backend";
+import { SuperTokensConfig as STConfig, getSuperTokensConnectionURI } from "./backend";
+import * as Roles from "./roles";
 
 export let backendConfig = (): TypeInput => {
     return {
@@ -26,6 +24,7 @@ let initialized = false;
 export function ensureSuperTokensInit() {
     if (!initialized) {
         SuperTokens.init(backendConfig());
+        Roles.init();
         initialized = true;
     }
 }

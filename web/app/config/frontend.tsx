@@ -1,10 +1,8 @@
-
 "use client";
 
 import ThirdParty from "supertokens-auth-react/recipe/thirdparty";
 import { ThirdPartyPreBuiltUI } from "supertokens-auth-react/recipe/thirdparty/prebuiltui";
 import Session from "supertokens-auth-react/recipe/session";
-
 
 export function getApiDomain() {
     const apiPort = 3000;
@@ -18,8 +16,6 @@ export function getWebsiteDomain() {
     return websiteUrl;
 }
 
-
-
 export const SuperTokensConfig = {
     appInfo: {
         appName: "SuperTokens Demo App",
@@ -28,15 +24,15 @@ export const SuperTokensConfig = {
         apiBasePath: "/api/auth/",
         websiteBasePath: "/auth",
     },
-    
+
     recipeList: [
         ThirdParty.init({
             signInAndUpFeature: {
                 providers: [
-                    ThirdParty.Google.init(),
+                    // ThirdParty.Google.init(),
                     ThirdParty.Github.init(),
-                    ThirdParty.Apple.init(),
-                    ThirdParty.Twitter.init()
+                    // ThirdParty.Apple.init(),
+                    // ThirdParty.Twitter.init()
                 ],
             },
         }),
@@ -56,11 +52,7 @@ export const recipeDetails = {
 
 export const PreBuiltUIList = [ThirdPartyPreBuiltUI];
 
-
-
 export const ComponentWrapper = (props: { children: JSX.Element }): JSX.Element => {
     let childrenToRender = props.children;
-
-    
     return childrenToRender;
 }

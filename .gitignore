@@ -5,3 +5,5 @@
 *node_modules/*
 */AGENTS.md
 web/package-lock.json
+web/.next/*
+web/node_modules/*
