@@ -1,0 +1,7 @@
+*.env
+.env.*
+!.env.example
+.devcontainer/devcontainer-lock.json
+*node_modules/*
+*/AGENTS.md
+web/package-lock.json

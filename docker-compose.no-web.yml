@@ -1,0 +1,15 @@
+# Companion override for docker-compose.yml: start the stack WITHOUT the web app.
+#
+# Usage (from the repository root)
+#   Without web app:   docker compose -f docker-compose.yml -f docker-compose.no-web.yml up
+#   With web app too:  docker compose -f docker-compose.yml -f docker-compose.no-web.yml --profile web up
+#
+# This file moves the `web` service behind the opt-in `web` profile, so `up`
+# starts the Supabase stack alone. Everything else (service definitions, env
+# interpolation, the supabase include) is merged from docker-compose.yml
+# unchanged, so project name, volumes and networks match a normal
+# `docker compose up`.
+
+services:
+  web:
+    profiles: ["web"]
