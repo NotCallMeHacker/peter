@@ -1,0 +1,25 @@
+# Force LF line endings in the working tree, even on Windows checkouts
+# (core.autocrlf=true). These files are mounted into Linux containers,
+# where CRLF breaks shell scripts (e.g. supabase/volumes/api/envoy/docker-entrypoint.sh).
+* text=auto eol=lf
+
+*.sh   text eol=lf
+*.sql  text eol=lf
+*.yaml text eol=lf
+*.yml  text eol=lf
+*.exs  text eol=lf
+*.ts   text eol=lf
+*.js   text eol=lf
+*.json text eol=lf
+*.jsonc text eol=lf
+
+# Binary files
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.woff binary
+*.woff2 binary
+*.ttf  binary
+*.eot  binary
