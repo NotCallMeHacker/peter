@@ -1,9 +1,16 @@
+# ENV's
 *.env
 .env.*
 !.env.example
-.devcontainer/devcontainer-lock.json
+
+# Node modules
 *node_modules/*
-*/AGENTS.md
+
+# lock files
 web/package-lock.json
+.devcontainer/devcontainer-lock.json
+
+# Next.js build output
+*/AGENTS.md
 web/.next/*
 web/node_modules/*
