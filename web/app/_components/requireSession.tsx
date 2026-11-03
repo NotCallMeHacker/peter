@@ -3,8 +3,8 @@ import { redirect } from "next/navigation";
 import type { JwtPayload } from "jsonwebtoken";
 import { TryRefreshComponent } from "./tryRefreshClientComponent";
 import { SessionAuthForNextJS } from "./sessionAuthForNextJS";
-import { getSessionForSSR } from "../util";
-import { getLocale, createServerTranslator } from "../lib/i18n";
+import { getSessionForSSR } from "../_lib/util";
+import { getLocale, createServerTranslator } from "../_lib/i18n";
 
 type Props = {
     children: React.ReactNode | ((payload: JwtPayload) => React.ReactNode);

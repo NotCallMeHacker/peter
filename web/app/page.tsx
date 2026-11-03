@@ -1,5 +1,45 @@
-import { HomePage } from "./components/home";
+"use client";
+
+import Link from "next/link";
+import { useSessionContext } from "supertokens-auth-react/recipe/session";
+import { useTranslations } from "next-intl";
 
 export default function Home() {
-    return <HomePage />;
+    const session = useSessionContext();
+    const t = useTranslations();
+
+    if (session.loading) {
+        return null;
+    }
+
+    return (
+        <>
+            <section className="logos">
+                <img src="/ST.svg" alt="SuperTokens" />
+                <span>x</span>
+                <img src="/next.svg" alt="Next" />
+            </section>
+            <section className="main-container">
+                <div className="inner-content">
+                    <h1>
+                        <strong>SuperTokens</strong> x <strong>Next.js</strong> <br /> {t("homeTitle")}
+                    </h1>
+                    <div>
+                        {session.doesSessionExist ? <p>{t("homeSignedIn")}</p> : <p>{t("homeSignIn")}</p>}
+                    </div>
+                    <nav className="buttons">
+                        {session.doesSessionExist ? (
+                            <Link href="/dashboard" className="dashboard-button">
+                                {t("dashboard")}
+                            </Link>
+                        ) : (
+                            <Link href="/auth" className="dashboard-button">
+                                {t("signUpLogin")}
+                            </Link>
+                        )}
+                    </nav>
+                </div>
+            </section>
+        </>
+    );
 }

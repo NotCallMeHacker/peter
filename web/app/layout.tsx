@@ -2,8 +2,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Providers } from "./providers";
-import { AppShell } from "./components/app-shell";
-import { getLocale, getMessages } from "./lib/i18n";
+import { AppShell } from "./_components/appShell";
+import { getLocale, getMessages } from "./_lib/i18n";
 
 const inter = Inter({ subsets: ["latin"] });
 

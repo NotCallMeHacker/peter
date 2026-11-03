@@ -1,5 +1,5 @@
-import { RequireSession } from "../components/requireSession";
-import { getLocale, createServerTranslator } from "../lib/i18n";
+import { RequireSession } from "../_components/requireSession";
+import { getLocale, createServerTranslator } from "../_lib/i18n";
 
 export default async function KanbanPage() {
     const locale = await getLocale();

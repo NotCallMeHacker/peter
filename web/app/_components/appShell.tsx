@@ -1,10 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ThemeToggle } from "./theme-toggle";
-import { LangSwitcher } from "./lang-switcher";
+import { ThemeToggle } from "./themeToggle";
+import { LangSwitcher } from "./langSwitcher";
 import { SeparatorLine } from "../../assets/images";
 import { ComponentWrapper } from "../config/frontend";
-import { createServerTranslator } from "../lib/i18n";
+import { createServerTranslator } from "../_lib/i18n";
 
 export function AppShell({ children, locale }: { children: React.ReactNode; locale: string }) {
     const { t } = createServerTranslator(locale);

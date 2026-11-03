@@ -3,7 +3,7 @@
 import React from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { ThemeProvider } from "next-themes";
-import { SuperTokensProvider } from "./components/supertokensProvider";
+import { SuperTokensProvider } from "./_components/supertokensProvider";
 
 type ProvidersProps = {
     children: React.ReactNode;

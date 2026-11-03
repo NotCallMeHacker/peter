@@ -1,7 +1,7 @@
 import JsonWebToken from "jsonwebtoken";
 import type { JwtHeader, JwtPayload, SigningKeyCallback } from "jsonwebtoken";
 import jwksClient from "jwks-rsa";
-import { backendConfig } from "./config/backendConfigUtils";
+import { backendConfig } from "../config/backendConfigUtils";
 
 const appInfo = backendConfig().appInfo;
 
