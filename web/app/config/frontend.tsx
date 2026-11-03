@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import ThirdParty from "supertokens-auth-react/recipe/thirdparty";
 import EmailPassword from "supertokens-auth-react/recipe/emailpassword";
 import { ThirdPartyPreBuiltUI } from "supertokens-auth-react/recipe/thirdparty/prebuiltui";
@@ -55,7 +56,6 @@ export const recipeDetails = {
 
 export const PreBuiltUIList = [ThirdPartyPreBuiltUI, EmailPasswordPreBuiltUI];
 
-export const ComponentWrapper = (props: { children: JSX.Element }): JSX.Element => {
-    let childrenToRender = props.children;
-    return childrenToRender;
-}
+export const ComponentWrapper = (props: { children: React.ReactNode }): React.JSX.Element => {
+    return <>{props.children}</>;
+};

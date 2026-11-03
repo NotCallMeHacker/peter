@@ -6,8 +6,11 @@ import Image from "next/image";
 import { SessionAuthForNextJS } from "./sessionAuthForNextJS";
 import { getSessionForSSR } from "../util";
 import DashboardButtons from "./dashboardButtons";
+import { getLocale, createServerTranslator } from "../lib/i18n";
 
 export async function DashboardPage() {
+    const locale = await getLocale();
+    const { t } = createServerTranslator(locale);
     const cookiesFromReq = await cookies();
     const cookiesArray: Array<{ name: string; value: string }> = Array.from(cookiesFromReq.getAll()).map(
         ({ name, value }) => ({
@@ -18,7 +21,7 @@ export async function DashboardPage() {
     const { accessTokenPayload, hasToken, error } = await getSessionForSSR(cookiesArray);
 
     if (error) {
-        return <div>Something went wrong while trying to get the session. Error - {error.message}</div>;
+        return <div>{t("somethingWentWrong", { error: error.message })}</div>;
     }
 
     // `accessTokenPayload` will be undefined if it the session does not exist or has expired
@@ -48,10 +51,10 @@ export async function DashboardPage() {
         <SessionAuthForNextJS>
             <div className="main-container">
                 <div className="top-band success-title bold-500">
-                    <Image src={CelebrateIcon} alt="Login successful" className="success-icon" /> Login successful
+                    <Image src={CelebrateIcon} alt="Login successful" className="success-icon" /> {t("loginSuccessful")}
                 </div>
                 <div className="inner-content">
-                    <div>Your userID is:</div>
+                    <div>{t("yourUserId")}</div>
                     <div className="truncate" id="user-id">
                         {accessTokenPayload.sub}
                     </div>

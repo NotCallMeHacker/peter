@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useSessionContext } from "supertokens-auth-react/recipe/session";
+import { useTranslations } from "next-intl";
 
 export function HomePage() {
     const session = useSessionContext();
+    const t = useTranslations();
 
     if (session.loading) {
         return null;
@@ -20,25 +22,19 @@ export function HomePage() {
             <section className="main-container">
                 <div className="inner-content">
                     <h1>
-                        <strong>SuperTokens</strong> x <strong>Next.js</strong> <br /> example project
+                        <strong>SuperTokens</strong> x <strong>Next.js</strong> <br /> {t("homeTitle")}
                     </h1>
                     <div>
-                        {session.doesSessionExist ? (
-                            <p>
-                                You're signed in already, <br /> check out the Dashboard! 👇
-                            </p>
-                        ) : (
-                            <p>Sign-in to continue</p>
-                        )}
+                        {session.doesSessionExist ? <p>{t("homeSignedIn")}</p> : <p>{t("homeSignIn")}</p>}
                     </div>
                     <nav className="buttons">
                         {session.doesSessionExist ? (
                             <Link href="/dashboard" className="dashboard-button">
-                                Dashboard
+                                {t("dashboard")}
                             </Link>
                         ) : (
                             <Link href="/auth" className="dashboard-button">
-                                Sign-up / Login
+                                {t("signUpLogin")}
                             </Link>
                         )}
                     </nav>

@@ -2,9 +2,11 @@
 
 import { signOut } from "supertokens-auth-react/recipe/session";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function DashboardButtons() {
     const router = useRouter();
+    const t = useTranslations();
 
     const callAPIClicked = async () => {
         const userInfoResponse = await fetch("http://localhost:3000/api/user");
@@ -19,10 +21,10 @@ export default function DashboardButtons() {
     return (
         <div className="buttons">
             <button onClick={callAPIClicked} className="dashboard-button">
-                Call API
+                {t("callAPI")}
             </button>
             <button onClick={logoutClicked} className="dashboard-button">
-                Logout
+                {t("logout")}
             </button>
         </div>
     );

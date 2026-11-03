@@ -1,0 +1,19 @@
+{
+  "docs": "Dokumentation",
+  "cliRepo": "CLI Repo",
+  "homeTitle": "Beispielprojekt",
+  "homeSignedIn": "Du bist bereits angemeldet, schau dir das Dashboard an! 👇",
+  "homeSignIn": "Melde dich an, um fortzufahren",
+  "dashboard": "Dashboard",
+  "signUpLogin": "Registrieren / Anmelden",
+  "loginSuccessful": "Anmeldung erfolgreich",
+  "yourUserId": "Deine Benutzer-ID:",
+  "callAPI": "API aufrufen",
+  "logout": "Abmelden",
+  "kanbanTitle": "Kanban-Board",
+  "system": "System",
+  "light": "Hell",
+  "dark": "Dunkel",
+  "toggleTheme": "Thema wechseln",
+  "somethingWentWrong": "Beim Abrufen der Sitzung ist ein Fehler aufgetreten. Fehler - {error}"
+}

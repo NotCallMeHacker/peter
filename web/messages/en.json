@@ -1,0 +1,19 @@
+{
+  "docs": "Docs",
+  "cliRepo": "CLI Repo",
+  "homeTitle": "example project",
+  "homeSignedIn": "You're signed in already, check out the Dashboard! 👇",
+  "homeSignIn": "Sign-in to continue",
+  "dashboard": "Dashboard",
+  "signUpLogin": "Sign-up / Login",
+  "loginSuccessful": "Login successful",
+  "yourUserId": "Your userID is:",
+  "callAPI": "Call API",
+  "logout": "Logout",
+  "kanbanTitle": "Kanban Board",
+  "system": "System",
+  "light": "Light",
+  "dark": "Dark",
+  "toggleTheme": "Toggle theme",
+  "somethingWentWrong": "Something went wrong while trying to get the session. Error - {error}"
+}
