@@ -1,7 +1,9 @@
 "use client";
 
 import ThirdParty from "supertokens-auth-react/recipe/thirdparty";
+import EmailPassword from "supertokens-auth-react/recipe/emailpassword";
 import { ThirdPartyPreBuiltUI } from "supertokens-auth-react/recipe/thirdparty/prebuiltui";
+import { EmailPasswordPreBuiltUI } from "supertokens-auth-react/recipe/emailpassword/prebuiltui";
 import Session from "supertokens-auth-react/recipe/session";
 
 export function getApiDomain() {
@@ -26,6 +28,7 @@ export const SuperTokensConfig = {
     },
 
     recipeList: [
+        EmailPassword.init(),
         ThirdParty.init({
             signInAndUpFeature: {
                 providers: [
@@ -50,7 +53,7 @@ export const recipeDetails = {
     docsLink: "https://supertokens.com/docs/quickstart/introduction",
 };
 
-export const PreBuiltUIList = [ThirdPartyPreBuiltUI];
+export const PreBuiltUIList = [ThirdPartyPreBuiltUI, EmailPasswordPreBuiltUI];
 
 export const ComponentWrapper = (props: { children: JSX.Element }): JSX.Element => {
     let childrenToRender = props.children;

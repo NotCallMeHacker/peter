@@ -60,7 +60,7 @@ export const SuperTokensConfig: TypeInput = {
         websiteBasePath: "/auth",
     },
     recipeList: [
-        // EmailPassword.init(), // Removed, as we only want to support github login for now
+        EmailPassword.init(), // Removed, as we only want to support github login for now
         ThirdParty.init({
             signInAndUpFeature: {
                 providers: [
