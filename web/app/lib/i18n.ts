@@ -9,28 +9,28 @@ const defaultLocale = "en";
 const supportedLocales = ["en", "de"];
 
 const messagesMap: Record<string, Messages> = {
-  en: enMessages,
-  de: deMessages,
+    en: enMessages,
+    de: deMessages,
 };
 
 export async function getLocale(): Promise<string> {
-  const cookieStore = await cookies();
-  const localeCookie = cookieStore.get("locale")?.value;
-  if (localeCookie && supportedLocales.includes(localeCookie)) {
-    return localeCookie;
-  }
-  return defaultLocale;
+    const cookieStore = await cookies();
+    const localeCookie = cookieStore.get("locale")?.value;
+    if (localeCookie && supportedLocales.includes(localeCookie)) {
+        return localeCookie;
+    }
+    return defaultLocale;
 }
 
 export function getMessages(locale: string): Messages {
-  return messagesMap[locale] ?? messagesMap[defaultLocale];
+    return messagesMap[locale] ?? messagesMap[defaultLocale];
 }
 
 export function createServerTranslator(locale: string) {
-  const messages = getMessages(locale);
-  return {
-    t: createTranslator({ locale, messages }),
-    locale,
-    messages,
-  };
+    const messages = getMessages(locale);
+    return {
+        t: createTranslator({ locale, messages }),
+        locale,
+        messages,
+    };
 }

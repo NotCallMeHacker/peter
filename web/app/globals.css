@@ -51,6 +51,7 @@ body {
     font-size: 14px;
     line-height: 1.4;
 }
+
 .demo-warning-banner code {
     background: rgba(0, 0, 0, 0.08);
     padding: 1px 5px;
@@ -204,11 +205,13 @@ footer a:hover {
     flex-grow: 1;
     padding-top: 20px;
 }
+
 #st-tenant-selector-footer span {
     margin-right: 10px;
     font-size: 16px;
     font-weight: semibold;
 }
+
 #st-tenant-selector-footer button {
     background-color: transparent;
     border: 1px solid #ff9900;
@@ -218,6 +221,7 @@ footer a:hover {
     font-weight: normal;
     cursor: pointer;
 }
+
 #st-tenant-modal-backdrop {
     position: fixed;
     top: 0;
@@ -230,6 +234,7 @@ footer a:hover {
     align-items: center;
     z-index: 10001;
 }
+
 #st-tenant-modal {
     background-color: white;
     padding: 20px;
@@ -239,10 +244,12 @@ footer a:hover {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     text-align: left;
 }
+
 #st-tenant-modal h3 {
     margin-top: 0;
     margin-bottom: 15px;
 }
+
 #st-tenant-modal ul {
     list-style: none;
     padding: 0;
@@ -250,17 +257,21 @@ footer a:hover {
     max-height: 300px;
     overflow-y: auto;
 }
+
 #st-tenant-modal li {
     padding: 10px;
     border-bottom: 1px solid #eee;
     cursor: pointer;
 }
+
 #st-tenant-modal li:hover {
     background-color: #f9f9f9;
 }
+
 #st-tenant-modal li:last-child {
     border-bottom: none;
 }
+
 #st-tenant-modal-close {
     float: right;
     cursor: pointer;
