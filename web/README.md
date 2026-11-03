@@ -42,11 +42,11 @@ This project aims to demonstrate how to integrate SuperTokens into a Nexjs appli
 ┃ ┣ 📜page.tsx
 ┃ ┗ 📜util.ts
 ┣ 📂assets
-┣ 📜middleware.ts
 ┣ 📜next-env.d.ts
 ┣ 📜next.config.js
 ┣ 📜package-lock.json
 ┣ 📜package.json
+┣ 📜proxy.ts
 ┣ 📜README.md
 ┣ 📂public
 ┗ 📜tsconfig.json
