@@ -14,3 +14,5 @@ web/package-lock.json
 */AGENTS.md
 web/.next/*
 web/node_modules/*
+
+pi/
