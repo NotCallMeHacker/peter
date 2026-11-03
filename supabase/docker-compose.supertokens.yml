@@ -11,6 +11,11 @@ services:
       POSTGRESQL_PORT: 5432
       POSTGRESQL_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in supabase/.env}
       POSTGRESQL_DATABASE_NAME: ${POSTGRES_DB:-postgres}
+      # Move SuperTokens tables out of public into their own schema.
+      # (config.yaml's postgresql_table_schema is the native knob; the
+      # POSTGRESQL_TABLE_SCHEMA env var maps to it. The JDBC
+      # currentSchema=... URL param does NOT work — ST uses its own SQL layer.)
+      POSTGRESQL_TABLE_SCHEMA: supertokens
     depends_on:
       db:
         condition: service_healthy
