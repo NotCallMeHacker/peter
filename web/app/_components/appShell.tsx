@@ -4,10 +4,10 @@ import { ThemeToggle } from "./themeToggle";
 import { LangSwitcher } from "./langSwitcher";
 import { SeparatorLine } from "../../assets/images";
 import { ComponentWrapper } from "../config/frontend";
-import { createServerTranslator } from "../_lib/i18n";
+import { createServerTranslator, type Locale } from "../_lib/i18n";
 
-export function AppShell({ children, locale }: { children: React.ReactNode; locale: string }) {
-    const { t } = createServerTranslator(locale);
+export function AppShell({ children, locale }: { children: React.ReactNode; locale: Locale }) {
+    const { t } = createServerTranslator(locale, "common");
 
     return (
         <div className="App app-container">

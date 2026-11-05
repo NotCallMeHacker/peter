@@ -6,7 +6,8 @@ import { useTranslations } from "next-intl";
 
 export default function DashboardButtons() {
     const router = useRouter();
-    const t = useTranslations();
+    const t = useTranslations("dashboard");
+    const tCommon = useTranslations("common");
 
     const callAPIClicked = async () => {
         const userInfoResponse = await fetch("http://localhost:3000/api/user");
@@ -24,7 +25,7 @@ export default function DashboardButtons() {
                 {t("callAPI")}
             </button>
             <button onClick={logoutClicked} className="dashboard-button">
-                {t("logout")}
+                {tCommon("logout")}
             </button>
         </div>
     );

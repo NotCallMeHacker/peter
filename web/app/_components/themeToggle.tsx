@@ -4,15 +4,17 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Monitor, Moon, Sun, ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const themes = [
-    { key: "system", label: "System", Icon: Monitor },
-    { key: "light", label: "Light", Icon: Sun },
-    { key: "dark", label: "Dark", Icon: Moon },
-];
+    { key: "system", Icon: Monitor },
+    { key: "light", Icon: Sun },
+    { key: "dark", Icon: Moon },
+] as const;
 
 export function ThemeToggle() {
     const { theme, setTheme } = useTheme();
+    const t = useTranslations("theme");
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -21,7 +23,7 @@ export function ThemeToggle() {
 
     if (!mounted) {
         return (
-            <button className="theme-trigger" disabled aria-label="Toggle theme">
+            <button className="theme-trigger" disabled aria-label={t("toggle")}>
                 <Sun size={16} />
                 <span>...</span>
                 <ChevronDown size={14} />
@@ -29,26 +31,26 @@ export function ThemeToggle() {
         );
     }
 
-    const active = themes.find((t) => t.key === theme) ?? themes[0];
+    const active = themes.find((th) => th.key === theme) ?? themes[0];
     const ActiveIcon = active.Icon;
 
     return (
         <DropdownMenu.Root>
-            <DropdownMenu.Trigger className="theme-trigger" aria-label="Toggle theme">
+            <DropdownMenu.Trigger className="theme-trigger" aria-label={t("toggle")}>
                 <ActiveIcon size={16} />
-                <span>{active.label}</span>
+                <span>{t(active.key)}</span>
                 <ChevronDown size={14} />
             </DropdownMenu.Trigger>
             <DropdownMenu.Portal>
                 <DropdownMenu.Content className="theme-dropdown" sideOffset={4} align="end">
-                    {themes.map(({ key, label, Icon }) => (
+                    {themes.map(({ key, Icon }) => (
                         <DropdownMenu.Item
                             key={key}
                             className={`theme-dropdown-item${theme === key ? " active" : ""}`}
                             onSelect={() => setTheme(key)}
                         >
                             <Icon size={14} />
-                            {label}
+                            {t(key)}
                         </DropdownMenu.Item>
                     ))}
                 </DropdownMenu.Content>

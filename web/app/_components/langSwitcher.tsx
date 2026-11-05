@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Globe, ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const locales = [
     { key: "en", label: "English" },
@@ -12,6 +13,7 @@ const locales = [
 
 export function LangSwitcher({ currentLocale }: { currentLocale: string }) {
     const router = useRouter();
+    const t = useTranslations("common");
     const [, startTransition] = useTransition();
 
     function switchLocale(locale: string) {
@@ -23,7 +25,7 @@ export function LangSwitcher({ currentLocale }: { currentLocale: string }) {
 
     return (
         <DropdownMenu.Root>
-            <DropdownMenu.Trigger className="lang-trigger" aria-label="Change language">
+            <DropdownMenu.Trigger className="lang-trigger" aria-label={t("changeLanguage")}>
                 <Globe size={16} />
                 <span>{locales.find((l) => l.key === currentLocale)?.label ?? currentLocale}</span>
                 <ChevronDown size={14} />

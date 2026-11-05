@@ -6,7 +6,7 @@ import { getLocale, createServerTranslator } from "../_lib/i18n";
 
 export default async function Dashboard() {
     const locale = await getLocale();
-    const { t } = createServerTranslator(locale);
+    const { t } = createServerTranslator(locale, "dashboard");
 
     return (
         <RequireSession>

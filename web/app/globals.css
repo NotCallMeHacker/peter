@@ -42,6 +42,10 @@ body {
 }
 
 /* Demo-only banner — remove these rules once you stop using try.supertokens.com. */
+.separator-line {
+    max-width: 100%;
+    height: auto;
+}
 .demo-warning-banner {
     background-color: #fff4d6;
     color: #7a5b00;

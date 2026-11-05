@@ -1,0 +1,1176 @@
+/* Self-hosted faces — bundled from @fontsource, never fetched at runtime. */
+@import "@fontsource/plus-jakarta-sans/400.css";
+@import "@fontsource/plus-jakarta-sans/500.css";
+@import "@fontsource/plus-jakarta-sans/600.css";
+@import "@fontsource/plus-jakarta-sans/700.css";
+@import "@fontsource/plus-jakarta-sans/800.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+
+/* ── Studio Workflow world tokens ─────────────────────────────── */
+.kb {
+    /* ground: white page, light neutral columns — no blue field */
+    --kb-page: #ffffff;
+    --kb-frame: #ffffff;
+    /* tint kept for search field + id chips; columns/cards are flat (no wells) */
+    --kb-col-bg: #f6f7f9;
+    --kb-line: #e8eaf0;
+    --kb-line-strong: #eceef2;
+    /* ink */
+    --kb-ink: #1f2340;
+    --kb-ink-soft: #4a5078;
+    --kb-muted: #646a8f;
+    --kb-faint: #666d92;
+    /* world */
+    --kb-navy-1: #343a87;
+    --kb-navy-2: #2b2f6b;
+    --kb-violet: #6d5ce7;
+    --kb-teal: #0f766e;
+    --kb-blue: #3b66e8;
+    --kb-green: #147a50;
+    --kb-coral: #f4643c;
+    /* signals */
+    --kb-fail-ink: #b3452a;
+    --kb-fail-strong: #b3452a;
+    --kb-fail-bg: #fff1ec;
+    --kb-fail-line: #ffd9cc;
+    --kb-run-ink: #9a5b00;
+    --kb-run-bg: #fff5e5;
+    --kb-done-ink: #17724e;
+    --kb-done-bg: #e8f9f1;
+    /* type */
+    --kb-font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --kb-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    /* depth */
+    --kb-shadow-lift: 0 10px 24px rgba(31, 35, 64, 0.12);
+
+    position: relative;
+    display: flex;
+    height: 100vh;
+    min-height: 620px;
+    min-width: 0;
+    background: var(--kb-frame);
+    color: var(--kb-ink);
+    font-family: var(--kb-font);
+    font-size: 14.5px;
+    line-height: 1.5;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.kb ::selection {
+    background: #dfe6ff;
+    color: var(--kb-ink);
+}
+
+.kb ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.kb ::-webkit-scrollbar-thumb {
+    background: #d5d9e4;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    border-radius: 8px;
+}
+
+.kb ::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.kb :focus-visible {
+    outline: 2px solid var(--kb-blue);
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+.kb-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* White ground on the route — replaces the shell's image/blue field, and the
+   board carries its own chrome (sidebar, search, bell, avatar), so the shell's
+   demo header and footer stay out of the way on this route only. */
+#home-container:has(.kb) {
+    background: var(--kb-page, #ffffff);
+    padding: 0;
+}
+
+body:has(.kb)>.app-container>header {
+    display: none;
+}
+
+body:has(.kb) footer {
+    display: none;
+}
+
+/* ── sidebar ──────────────────────────────────────────────────── */
+.kb-side {
+    position: relative;
+    z-index: 30;
+    /* hover expansion overlays .kb-main instead of pushing it */
+    display: flex;
+    flex-direction: column;
+    width: 236px;
+    min-width: 0;
+    flex-shrink: 0;
+    padding: 22px 16px 18px;
+    background: #ffffff;
+    transition: width 0.2s ease, padding 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kb-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 36px;
+    padding: 0 8px;
+    margin-bottom: 26px;
+    transition: min-height 0.2s ease, margin-bottom 0.2s ease, padding 0.2s ease;
+}
+
+.kb-brand>div {
+    max-width: 180px;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width 0.2s ease, opacity 0.12s ease;
+}
+
+.kb-brand__logo {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    background: var(--kb-navy-2);
+    color: #fff;
+    border-radius: 11px;
+    font-weight: 800;
+    font-size: 16px;
+}
+
+.kb-brand b {
+    display: block;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+
+.kb-brand>div>span {
+    display: block;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--kb-faint);
+}
+
+.kb-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    transition: gap 0.2s ease;
+}
+
+.kb-nav__group {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    transition: gap 0.2s ease;
+}
+
+.kb-nav__section {
+    /* height is constant in both states — only opacity/margin animate,
+       so the text never appears to grow or shrink */
+    height: 18px;
+    overflow: hidden;
+    margin: 0 0 6px;
+    padding: 0 10px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--kb-faint);
+    transition: margin-bottom 0.2s ease, opacity 0.12s ease;
+}
+
+.kb-nav__item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 11px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--kb-ink-soft);
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease, padding 0.2s ease;
+}
+
+.kb-nav__item:hover {
+    background: #f4f5f9;
+    color: var(--kb-ink);
+}
+
+.kb-nav__item--on {
+    background: #eef1ff;
+    color: #3559d1;
+    font-weight: 600;
+}
+
+.kb-nav__label {
+    min-width: 0;
+    max-width: 130px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    transition: max-width 0.2s ease, opacity 0.12s ease;
+}
+
+.kb-nav__badge {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    min-width: 20px;
+    padding: 1px 7px;
+    background: var(--kb-fail-bg);
+    border: 1px solid var(--kb-fail-line);
+    border-radius: 9px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--kb-fail-ink);
+    text-align: center;
+    transition: right 0.2s ease, min-width 0.2s ease, padding 0.2s ease, font-size 0.2s ease;
+}
+
+.kb-side__foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 14px;
+    transition: gap 0.2s ease;
+}
+
+.kb-side__foot>* {
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: center;
+}
+
+.kb-side__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 7px 12px;
+    background: transparent;
+    border: 1px solid var(--kb-line-strong);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--kb-muted);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, padding 0.2s ease;
+}
+
+.kb-side__btn:hover {
+    border-color: #d5d9e4;
+    color: var(--kb-ink);
+}
+
+/* Foot labels mask out with the rail — never display:none (not animatable). */
+.kb .theme-trigger>*,
+.kb .lang-trigger>*,
+.kb-side__btn>span {
+    max-width: 160px;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width 0.2s ease, opacity 0.12s ease;
+}
+
+/* ── resting rail + hover overlay ───────────────────────────────
+   The sidebar rests as a 76px icon rail; hovering (or focusing
+   inside) it widens it to 236px OVER the board — position:relative
+   + z-index keep the board from reflowing, so nothing shifts.
+   Only animatable properties change (opacity / max-width /
+   min-height / padding / width): no display or flex-direction
+   flips, which would snap at t=0. Gated to ≥861px so the
+   horizontal mobile sidebar is untouched. */
+@media (min-width: 861px) {
+
+    /* rail space is reserved by the container, not by the sidebar:
+       the sidebar is out of flow, so widening it never reflows .kb-main */
+    .kb {
+        padding-left: 76px;
+    }
+
+    .kb-side {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 76px;
+        padding: 22px 12px 18px;
+    }
+
+    .kb-brand {
+        min-height: 76px; /* FIXME */
+        margin-bottom: 20px;
+        padding-left: 10px;
+    }
+
+    .kb-brand>div {
+        max-width: 0;
+        opacity: 0;
+    }
+
+    .kb-nav {
+        gap: 14px;
+    }
+
+    .kb-nav__group {
+        gap: 6px;
+    }
+
+    .kb-nav__section {
+        margin-bottom: 0;
+        opacity: 0;
+    }
+
+    .kb-nav__item {
+        justify-content: flex-start;
+        padding: 10px 10px 10px 18px;
+    }
+
+    .kb-nav__label {
+        max-width: 0;
+        opacity: 0;
+    }
+
+    .kb-nav__badge {
+        right: 3px;
+        min-width: 0;
+        padding: 0 4px;
+        font-size: 9px;
+        line-height: 1.5;
+    }
+
+    .kb-side__foot {
+        gap: 6px;
+    }
+
+    .kb-side__foot>* {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .kb .theme-trigger>*:not(:first-child),
+    .kb .lang-trigger>*:not(:first-child),
+    .kb-side__btn>span {
+        max-width: 0;
+        opacity: 0;
+    }
+
+    .kb .theme-trigger,
+    .kb .lang-trigger,
+    .kb-side__btn {
+        padding-left: 17px;
+    }
+
+    /* hover / focus overlay: expand over the board, no reflow */
+    .kb-side:hover,
+    .kb-side:focus-within {
+        width: 236px;
+        /* padding: 22px 16px 18px; */
+        box-shadow: 14px 0 36px rgba(31, 35, 64, 0.14);
+    }
+
+    .kb-side:hover .kb-brand,
+    .kb-side:focus-within .kb-brand {
+        padding-left: 10px;
+    }
+
+    .kb-side:hover .kb-brand>div,
+    .kb-side:focus-within .kb-brand>div {
+        max-width: 180px;
+        opacity: 1;
+    }
+
+    .kb-side:hover .kb-nav,
+    .kb-side:focus-within .kb-nav {
+        /* gap: 18px; */
+    }
+
+    .kb-side:hover .kb-nav__group,
+    .kb-side:focus-within .kb-nav__group {
+        gap: 6px;
+    }
+
+    .kb-side:hover .kb-nav__section,
+    .kb-side:focus-within .kb-nav__section {
+        opacity: 1;
+    }
+
+    .kb-side:hover .kb-nav__item,
+    .kb-side:focus-within .kb-nav__item {
+        /* justify-content: flex-start; */
+    }
+
+    .kb-side:hover .kb-nav__label,
+    .kb-side:focus-within .kb-nav__label {
+        max-width: 130px;
+        opacity: 1;
+    }
+
+    .kb-side:hover .kb-nav__badge,
+    .kb-side:focus-within .kb-nav__badge {
+        right: 10px;
+        min-width: 20px;
+        padding: 1px 7px;
+        font-size: 10.5px;
+        line-height: normal;
+    }
+
+    .kb-side:hover .kb-side__foot,
+    .kb-side:focus-within .kb-side__foot {
+        gap: 8px;
+    }
+
+    .kb-side:hover .theme-trigger>*:not(:first-child),
+    .kb-side:focus-within .theme-trigger>*:not(:first-child),
+    .kb-side:hover .lang-trigger>*:not(:first-child),
+    .kb-side:focus-within .lang-trigger>*:not(:first-child),
+    .kb-side:hover .kb-side__btn>span,
+    .kb-side:focus-within .kb-side__btn>span {
+        max-width: 160px;
+        opacity: 1;
+    }
+
+    .kb-side:hover .theme-trigger,
+    .kb-side:focus-within .theme-trigger,
+    .kb-side:hover .lang-trigger,
+    .kb-side:focus-within .lang-trigger {
+        padding-left: 13px;
+    }
+
+    .kb-side:hover .kb-side__btn,
+    .kb-side:focus-within .kb-side__btn {
+        padding-left: 13px;
+    }
+}
+
+/* The board is a light surface by design: the shell's theme/lang controls
+   keep the light palette inside .kb even when the app is in dark mode. */
+.kb .theme-trigger,
+.kb .lang-trigger {
+    color: var(--kb-ink-soft);
+    border-color: var(--kb-line-strong);
+    background: #ffffff;
+    transition: padding 0.2s ease;
+}
+
+.kb .theme-trigger:hover,
+.kb .lang-trigger:hover {
+    border-color: #d5d9e4;
+    color: var(--kb-ink);
+}
+
+.kb .theme-dropdown {
+    background: #ffffff;
+    border-color: var(--kb-line);
+    box-shadow: 0 12px 32px rgba(31, 35, 64, 0.16);
+}
+
+.kb .theme-dropdown-item {
+    color: var(--kb-ink-soft);
+}
+
+.kb .theme-dropdown-item:hover,
+.kb .theme-dropdown-item.active {
+    background: #eef1ff;
+    color: #3559d1;
+}
+
+/* ── main column ──────────────────────────────────────────────── */
+.kb-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    padding: 0 26px 18px;
+}
+
+/* top bar: bell, avatar, search icon — no divider. Scoped under .kb so it
+   outranks the shell's `header` / `.dark header` border rules. */
+.kb .kb-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0 0;
+    border-bottom: none;
+}
+
+.kb-search {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    margin-left: auto;
+    padding: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    color: var(--kb-muted);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.kb-search:hover {
+    background: #f4f5f9;
+    color: var(--kb-ink);
+}
+
+.kb-bell {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    color: var(--kb-muted);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.kb-bell:hover {
+    background: #f4f5f9;
+    color: var(--kb-ink);
+}
+
+.kb-bell__dot {
+    position: absolute;
+    top: 8px;
+    right: 9px;
+    width: 7px;
+    height: 7px;
+    background: var(--kb-coral);
+    border: 1.5px solid #fff;
+    border-radius: 50%;
+}
+
+/* title row */
+.kb-title {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 10px 0 12px;
+}
+
+.kb-title h1 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    text-wrap: balance;
+}
+
+.kb-title__sub {
+    margin: 6px 0 0;
+    max-width: 62ch;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--kb-muted);
+}
+
+/* ── board row ────────────────────────────────────────────────── */
+.kb-board {
+    display: flex;
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.kb-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 284px;
+    flex-shrink: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* navy hero */
+.kb-hero {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 22px;
+    background: linear-gradient(160deg, var(--kb-navy-1), var(--kb-navy-2));
+    border-radius: 20px;
+    color: #edefff;
+    flex-shrink: 0;
+}
+
+.kb-hero__cap {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #b9bef2;
+}
+
+.kb-hero__n {
+    margin: 6px 0 0;
+    font-size: 64px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--kb-coral);
+    font-variant-numeric: tabular-nums;
+}
+
+.kb-hero__lbl {
+    margin: 4px 0 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #c9cdf7;
+}
+
+.kb-hero__wt {
+    padding-top: 13px;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    font-family: var(--kb-mono);
+    font-size: 11px;
+    line-height: 1.5;
+    color: #b9bef2;
+    overflow-wrap: anywhere;
+}
+
+.kb-hero__wt p {
+    margin: 0 0 6px;
+}
+
+.kb-hero__wt b {
+    color: #fff;
+    font-weight: 500;
+}
+
+.kb-hero__wthead {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 7px !important;
+    font-family: var(--kb-font);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #b9bef2;
+}
+
+.kb-hero__plot {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 40px;
+    margin-top: auto;
+}
+
+.kb-hero__plot i {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: 3px 3px 0 0;
+}
+
+.kb-hero__plot i.is-failed {
+    background: var(--kb-coral);
+}
+
+/* chat card — mint bubbles like the reference's message panel */
+.kb-chat {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    padding: 16px 18px;
+    background: #ffffff;
+    border: 1px solid var(--kb-line);
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.kb-chat__head {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--kb-muted);
+}
+
+.kb-chat__msgs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-height: 120px;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+
+.kb-msg {
+    padding: 10px 13px;
+    background: #e7f7ee;
+    border-radius: 13px 13px 13px 4px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #1f4d3a;
+}
+
+.kb-msg p {
+    margin: 0;
+}
+
+.kb-msg--me {
+    background: #eef1ff;
+    border-radius: 13px 13px 4px 13px;
+    margin-left: 22px;
+    color: #2b3157;
+}
+
+.kb-msg__who {
+    display: block;
+    margin-bottom: 3px;
+    font-family: var(--kb-mono);
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: #5c6386;
+}
+
+.kb-chat__input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px 11px;
+    border: 1px solid var(--kb-line);
+    border-radius: 12px;
+    font-size: 12.5px;
+    color: var(--kb-faint);
+}
+
+/* ── columns ──────────────────────────────────────────────────── */
+.kb-cols {
+    display: flex;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+}
+
+.kb-col {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    padding: 14px;
+    /* kanban4: columns are not wells — pills + cards float on the white ground */
+    background: transparent;
+    border: none;
+}
+
+.kb-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 13px;
+    margin-bottom: 12px;
+    border-radius: 11px;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.kb-pill--backlog {
+    background: var(--kb-violet);
+}
+
+.kb-pill--ready {
+    background: var(--kb-teal);
+}
+
+.kb-pill--progress {
+    background: var(--kb-blue);
+}
+
+.kb-pill--review {
+    background: var(--kb-green);
+}
+
+.kb-pill__sep {
+    opacity: 0.7;
+    font-weight: 500;
+}
+
+.kb-pill__dot {
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+}
+
+.kb-col__cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 2px;
+    scrollbar-width: thin;
+    scrollbar-color: #d5d9e4 transparent;
+}
+
+.kb-col__cards::-webkit-scrollbar {
+    width: 8px;
+}
+
+.kb-col__cards::-webkit-scrollbar-thumb {
+    background: #d5d9e4;
+    border: 2px solid var(--kb-frame);
+    border-radius: 6px;
+}
+
+.kb-col__empty {
+    margin: 2px 0 0;
+    padding: 18px 14px;
+    border: 1.5px dashed var(--kb-line-strong);
+    border-radius: 14px;
+    font-size: 12.5px;
+    font-weight: 500;
+    text-align: center;
+    color: var(--kb-muted);
+}
+
+/* ── cards ────────────────────────────────────────────────────── */
+.kb-card {
+    padding: 15px 16px 14px;
+    /* flat row: hairline border only, no fill (kanban4) */
+    background: transparent;
+    border: 1px solid var(--kb-line);
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(31, 35, 64, 0.04);
+    transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease,
+        border-color 0.18s ease;
+}
+
+.kb-card:hover {
+    transform: translateY(-2px);
+    border-color: #d9dde8;
+    box-shadow: var(--kb-shadow-lift);
+}
+
+.kb-card--flagged {
+    background: #fff8f5;
+    border-color: var(--kb-fail-line);
+}
+
+.kb-card__id {
+    display: inline-block;
+    padding: 2px 7px;
+    background: var(--kb-col-bg);
+    border: 1px solid var(--kb-line);
+    border-radius: 6px;
+    font-family: var(--kb-mono);
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    color: var(--kb-muted);
+}
+
+.kb-card__title {
+    margin: 7px 0 11px;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.45;
+    color: #272b4d;
+    text-wrap: pretty;
+}
+
+.kb-card__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.kb-card__date {
+    margin-left: auto;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--kb-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.kb-tag {
+    padding: 2px 8px;
+    border-radius: 7px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.kb-tag--bug {
+    background: var(--kb-fail-bg);
+    color: var(--kb-fail-ink);
+}
+
+.kb-tag--improvement {
+    background: #eef1ff;
+    color: #3d5fd6;
+}
+
+.kb-tag--chore {
+    background: #f1f3f9;
+    color: #5a648f;
+}
+
+.kb-tag--docs {
+    background: var(--kb-done-bg);
+    color: var(--kb-done-ink);
+}
+
+.kb-tag--run {
+    font-family: var(--kb-mono);
+    font-weight: 500;
+}
+
+.kb-tag--run-running,
+.kb-tag--run-queued {
+    background: var(--kb-run-bg);
+    color: var(--kb-run-ink);
+}
+
+.kb-tag--run-failed {
+    background: var(--kb-fail-strong);
+    color: #ffffff;
+}
+
+.kb-tag--run-done {
+    background: var(--kb-done-bg);
+    color: var(--kb-done-ink);
+}
+
+.kb-avatar {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.kb-avatar--blue {
+    background: var(--kb-blue);
+}
+
+.kb-avatar--green {
+    background: var(--kb-green);
+}
+
+.kb-avatar--coral {
+    background: var(--kb-fail-strong);
+}
+
+.kb-avatar--me {
+    width: 38px;
+    height: 38px;
+    background: var(--kb-navy-2);
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.kb-bar {
+    height: 5px;
+    margin-top: 10px;
+    background: var(--kb-line);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.kb-bar__fill {
+    display: block;
+    height: 100%;
+    background: var(--kb-blue);
+    border-radius: 4px;
+}
+
+.kb-bar__fill--done {
+    background: var(--kb-green);
+}
+
+/* demo-data note */
+.kb-note {
+    margin: 8px 2px 0;
+    font-size: 11.5px;
+    color: var(--kb-faint);
+}
+
+/* ── responsive ───────────────────────────────────────────────── */
+
+@media (max-width: 1180px) {
+    .kb {
+        height: auto;
+        min-height: calc(100vh - 208px);
+    }
+
+    .kb-board {
+        flex-wrap: wrap;
+    }
+
+    .kb-stack {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .kb-hero {
+        flex: 1;
+        min-width: 260px;
+    }
+
+    .kb-chat {
+        flex: 1;
+        min-width: 260px;
+        max-height: none;
+    }
+
+    .kb-chat__msgs {
+        min-height: 0;
+        overflow: visible;
+    }
+
+    .kb-cols {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .kb-col {
+        min-width: 260px;
+    }
+}
+
+@media (max-width: 860px) {
+    .kb {
+        flex-direction: column;
+    }
+
+    .kb-side {
+        width: 100%;
+        padding: 14px 16px;
+    }
+
+    .kb-brand {
+        margin-bottom: 12px;
+    }
+
+    .kb-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        overflow: visible;
+    }
+
+    .kb-nav__section {
+        display: none;
+    }
+
+    .kb-nav__group {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .kb-nav__item {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .kb-side__foot {
+        padding-top: 10px;
+    }
+
+    .kb-main {
+        padding: 0 14px 14px;
+    }
+
+    .kb-top {
+        flex-wrap: wrap;
+    }
+
+    .kb-title {
+        flex-wrap: wrap;
+    }
+
+    .kb-col {
+        min-width: 100%;
+    }
+
+    .kb-stack {
+        flex-direction: column;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .kb-card,
+    .kb-nav__item,
+    .kb-bell,
+    .kb-side__btn,
+    .kb-side,
+    .kb-brand,
+    .kb-brand>div,
+    .kb-nav,
+    .kb-nav__group,
+    .kb-nav__section,
+    .kb-nav__label,
+    .kb-nav__badge,
+    .kb-side__foot,
+    .kb-side__foot>*,
+    .kb .theme-trigger,
+    .kb .lang-trigger,
+    .kb .theme-trigger>*,
+    .kb .lang-trigger>*,
+    .kb-side__btn>span {
+        transition: none;
+    }
+
+    .kb-card:hover {
+        transform: none;
+    }
+}

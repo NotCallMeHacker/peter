@@ -1,19 +1,62 @@
 {
-  "docs": "Dokumentation",
-  "cliRepo": "CLI Repo",
-  "homeTitle": "Beispielprojekt",
-  "homeSignedIn": "Du bist bereits angemeldet, schau dir das Dashboard an! 👇",
-  "homeSignIn": "Melde dich an, um fortzufahren",
-  "dashboard": "Dashboard",
-  "signUpLogin": "Registrieren / Anmelden",
-  "loginSuccessful": "Anmeldung erfolgreich",
-  "yourUserId": "Deine Benutzer-ID:",
-  "callAPI": "API aufrufen",
-  "logout": "Abmelden",
-  "kanbanTitle": "Kanban-Board",
-  "system": "System",
-  "light": "Hell",
-  "dark": "Dunkel",
-  "toggleTheme": "Thema wechseln",
-  "somethingWentWrong": "Beim Abrufen der Sitzung ist ein Fehler aufgetreten. Fehler - {error}"
+    "common": {
+        "docs": "Dokumentation",
+        "cliRepo": "CLI Repo",
+        "logout": "Abmelden",
+        "changeLanguage": "Sprache wechseln",
+        "somethingWentWrong": "Beim Abrufen der Sitzung ist ein Fehler aufgetreten. Fehler - {error}"
+    },
+    "home": {
+        "title": "Beispielprojekt",
+        "signedIn": "Du bist bereits angemeldet, schau dir das Dashboard an! 👇",
+        "signIn": "Melde dich an, um fortzufahren",
+        "dashboard": "Dashboard",
+        "signUpLogin": "Registrieren / Anmelden"
+    },
+    "dashboard": {
+        "loginSuccessful": "Anmeldung erfolgreich",
+        "yourUserId": "Deine Benutzer-ID:",
+        "callAPI": "API aufrufen"
+    },
+    "theme": {
+        "toggle": "Thema wechseln",
+        "system": "System",
+        "light": "Hell",
+        "dark": "Dunkel"
+    },
+    "kanban": {
+        "title": "Kanban-Board",
+        "subtitle": "peter / core · wt/agent-1 · wt/agent-2 · wt/main",
+        "brandSub": "für Teams",
+        "search": "Issues, Agenten, Worktrees durchsuchen…",
+        "notifications": "Benachrichtigungen",
+        "needsYou": "Braucht dich",
+        "failedRuns": "Läufe fehlgeschlagen · {count} brauchen dich",
+        "worktrees": "Worktrees",
+        "activity": "Lauf-Aktivität — 24 Std.",
+        "agentChat": "Agenten-Chat",
+        "messagePlaceholder": "Nachricht an die Agenten…",
+        "syntheticNote": "Demo-Daten — Issues, Läufe und Worktrees sind synthetisch, bis das Agenten-Backend kommt.",
+        "nav": {
+            "overview": "Übersicht",
+            "dashboard": "Dashboard",
+            "projects": "Projekte",
+            "team": "Teammitglieder",
+            "work": "Arbeit",
+            "board": "Board",
+            "agents": "Agenten",
+            "docs": "Doku",
+            "git": "Git",
+            "account": "Konto",
+            "help": "Hilfe-Center",
+            "settings": "Einstellungen"
+        },
+        "columns": {
+            "backlog": "Backlog",
+            "ready": "Bereit",
+            "progress": "In Arbeit",
+            "review": "Review",
+            "empty": "Noch nichts hier — delegiere ein Issue an einen Agenten."
+        }
+    }
 }

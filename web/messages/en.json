@@ -1,19 +1,62 @@
 {
-  "docs": "Docs",
-  "cliRepo": "CLI Repo",
-  "homeTitle": "example project",
-  "homeSignedIn": "You're signed in already, check out the Dashboard! 👇",
-  "homeSignIn": "Sign-in to continue",
-  "dashboard": "Dashboard",
-  "signUpLogin": "Sign-up / Login",
-  "loginSuccessful": "Login successful",
-  "yourUserId": "Your userID is:",
-  "callAPI": "Call API",
-  "logout": "Logout",
-  "kanbanTitle": "Kanban Board",
-  "system": "System",
-  "light": "Light",
-  "dark": "Dark",
-  "toggleTheme": "Toggle theme",
-  "somethingWentWrong": "Something went wrong while trying to get the session. Error - {error}"
+    "common": {
+        "docs": "Docs",
+        "cliRepo": "CLI Repo",
+        "logout": "Logout",
+        "changeLanguage": "Change language",
+        "somethingWentWrong": "Something went wrong while trying to get the session. Error - {error}"
+    },
+    "home": {
+        "title": "example project",
+        "signedIn": "You're signed in already, check out the Dashboard! 👇",
+        "signIn": "Sign-in to continue",
+        "dashboard": "Dashboard",
+        "signUpLogin": "Sign-up / Login"
+    },
+    "dashboard": {
+        "loginSuccessful": "Login successful",
+        "yourUserId": "Your userID is:",
+        "callAPI": "Call API"
+    },
+    "theme": {
+        "toggle": "Toggle theme",
+        "system": "System",
+        "light": "Light",
+        "dark": "Dark"
+    },
+    "kanban": {
+        "title": "Kanban Board",
+        "subtitle": "peter / core · wt/agent-1 · wt/agent-2 · wt/main",
+        "brandSub": "for teams",
+        "search": "Search issues, agents, worktrees…",
+        "notifications": "Notifications",
+        "needsYou": "Needs you",
+        "failedRuns": "runs failed · {count} need you",
+        "worktrees": "Worktrees",
+        "activity": "Run activity — 24h",
+        "agentChat": "Agent chat",
+        "messagePlaceholder": "Message the agents…",
+        "syntheticNote": "Demo data — issues, runs and worktrees are synthetic until the agent backend lands.",
+        "nav": {
+            "overview": "Overview",
+            "dashboard": "Dashboard",
+            "projects": "Projects",
+            "team": "Team Members",
+            "work": "Work",
+            "board": "Board",
+            "agents": "Agents",
+            "docs": "Docs",
+            "git": "Git",
+            "account": "Account",
+            "help": "Help Center",
+            "settings": "Settings"
+        },
+        "columns": {
+            "backlog": "Backlog",
+            "ready": "Ready",
+            "progress": "In progress",
+            "review": "Review",
+            "empty": "Nothing here yet — delegate an issue to an agent."
+        }
+    }
 }

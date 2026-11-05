@@ -22,7 +22,7 @@ type Props = {
  */
 export async function RequireSession({ children }: Props) {
     const locale = await getLocale();
-    const { t } = createServerTranslator(locale);
+    const { t } = createServerTranslator(locale, "common");
     const cookiesFromReq = await cookies();
     const cookiesArray: Array<{ name: string; value: string }> = Array.from(cookiesFromReq.getAll()).map(
         ({ name, value }) => ({

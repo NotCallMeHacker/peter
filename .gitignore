@@ -7,3 +7,8 @@
 web/package-lock.json
 web/.next/*
 web/node_modules/*
+.agents/*
+.github/*
+!.github/workflows/*
+!.github/dependabot.yml
+.impeccable/*

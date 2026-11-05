@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 
 export default function Home() {
     const session = useSessionContext();
-    const t = useTranslations();
+    const t = useTranslations("home");
 
     if (session.loading) {
         return null;
@@ -22,10 +22,10 @@ export default function Home() {
             <section className="main-container">
                 <div className="inner-content">
                     <h1>
-                        <strong>SuperTokens</strong> x <strong>Next.js</strong> <br /> {t("homeTitle")}
+                        <strong>SuperTokens</strong> x <strong>Next.js</strong> <br /> {t("title")}
                     </h1>
                     <div>
-                        {session.doesSessionExist ? <p>{t("homeSignedIn")}</p> : <p>{t("homeSignIn")}</p>}
+                        {session.doesSessionExist ? <p>{t("signedIn")}</p> : <p>{t("signIn")}</p>}
                     </div>
                     <nav className="buttons">
                         {session.doesSessionExist ? (
