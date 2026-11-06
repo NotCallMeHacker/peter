@@ -57,6 +57,12 @@
             "progress": "In Arbeit",
             "review": "Review",
             "empty": "Noch nichts hier — delegiere ein Issue an einen Agenten."
+        },
+        "type": {
+            "bug": "bug",
+            "improvement": "Verbesserung",
+            "chore": "Chore",
+            "docs": "Doku"
         }
     }
 }

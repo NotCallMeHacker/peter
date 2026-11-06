@@ -1,6 +1,6 @@
 import { RequireSession } from "../_components/requireSession";
 import KanbanPage from "./board";
-import "./kanban.css";
+import "./board.css";
 
 export default async function KanbanRoute() {
     return (

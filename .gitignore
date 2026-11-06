@@ -12,3 +12,5 @@ web/node_modules/*
 !.github/workflows/*
 !.github/dependabot.yml
 .impeccable/*
+DESIGN.md
+PRODUCT.md

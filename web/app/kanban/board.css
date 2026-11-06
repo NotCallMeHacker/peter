@@ -1,3 +1,9 @@
+/* Kanban board page.
+   The world tokens (`.kb`) live here; everything else is scoped to the route.
+   Sidebar and foot-control styles ship with their own components:
+   `app/_components/sidebar.css`, and the shared menu/dropdown styles sit in
+   `app/globals.css`. */
+
 /* Self-hosted faces — bundled from @fontsource, never fetched at runtime. */
 @import "@fontsource/plus-jakarta-sans/400.css";
 @import "@fontsource/plus-jakarta-sans/500.css";
@@ -12,6 +18,8 @@
     /* ground: white page, light neutral columns — no blue field */
     --kb-page: #ffffff;
     --kb-frame: #ffffff;
+    --kb-wash: #f4f5f9;
+    --kb-line-hover: #d5d9e4;
     /* tint kept for search field + id chips; columns/cards are flat (no wells) */
     --kb-col-bg: #f6f7f9;
     --kb-line: #e8eaf0;
@@ -49,7 +57,7 @@
     height: 100vh;
     min-height: 620px;
     min-width: 0;
-    background: var(--kb-frame);
+    background: var(--kb-page);
     color: var(--kb-ink);
     font-family: var(--kb-font);
     font-size: 14.5px;
@@ -69,7 +77,7 @@
 }
 
 .kb ::-webkit-scrollbar-thumb {
-    background: #d5d9e4;
+    background: var(--kb-line-hover);
     border: 3px solid transparent;
     background-clip: padding-box;
     border-radius: 8px;
@@ -83,15 +91,6 @@
     outline: 2px solid var(--kb-blue);
     outline-offset: 2px;
     border-radius: 6px;
-}
-
-.kb-sr {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
 }
 
 /* White ground on the route — replaces the shell's image/blue field, and the
@@ -110,399 +109,17 @@ body:has(.kb) footer {
     display: none;
 }
 
-/* ── sidebar ──────────────────────────────────────────────────── */
-.kb-side {
-    position: relative;
-    z-index: 30;
-    /* hover expansion overlays .kb-main instead of pushing it */
-    display: flex;
-    flex-direction: column;
-    width: 236px;
-    min-width: 0;
-    flex-shrink: 0;
-    padding: 22px 16px 18px;
-    background: #ffffff;
-    transition: width 0.2s ease, padding 0.2s ease, box-shadow 0.2s ease;
+/* Route scaffolding: `.kb` is the page root and reserves the sidebar rail's
+   width at desktop sizes (the sidebar itself carries no prefix — it is a
+   standalone component; its rail rules live in the sidebar stylesheet). */
+.kb {
+    padding-left: 76px;
 }
 
-.kb-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 36px;
-    padding: 0 8px;
-    margin-bottom: 26px;
-    transition: min-height 0.2s ease, margin-bottom 0.2s ease, padding 0.2s ease;
-}
-
-.kb-brand>div {
-    max-width: 180px;
-    overflow: hidden;
-    white-space: nowrap;
-    transition: max-width 0.2s ease, opacity 0.12s ease;
-}
-
-.kb-brand__logo {
-    display: grid;
-    place-items: center;
-    width: 36px;
-    height: 36px;
-    flex-shrink: 0;
-    background: var(--kb-navy-2);
-    color: #fff;
-    border-radius: 11px;
-    font-weight: 800;
-    font-size: 16px;
-}
-
-.kb-brand b {
-    display: block;
-    font-size: 16px;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    line-height: 1.2;
-}
-
-.kb-brand>div>span {
-    display: block;
-    font-size: 9.5px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--kb-faint);
-}
-
-.kb-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    transition: gap 0.2s ease;
-}
-
-.kb-nav__group {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    transition: gap 0.2s ease;
-}
-
-.kb-nav__section {
-    /* height is constant in both states — only opacity/margin animate,
-       so the text never appears to grow or shrink */
-    height: 18px;
-    overflow: hidden;
-    margin: 0 0 6px;
-    padding: 0 10px;
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--kb-faint);
-    transition: margin-bottom 0.2s ease, opacity 0.12s ease;
-}
-
-.kb-nav__item {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 10px;
-    border-radius: 11px;
-    font-size: 13.5px;
-    font-weight: 500;
-    color: var(--kb-ink-soft);
-    text-decoration: none;
-    transition: background 0.15s ease, color 0.15s ease, padding 0.2s ease;
-}
-
-.kb-nav__item:hover {
-    background: #f4f5f9;
-    color: var(--kb-ink);
-}
-
-.kb-nav__item--on {
-    background: #eef1ff;
-    color: #3559d1;
-    font-weight: 600;
-}
-
-.kb-nav__label {
-    min-width: 0;
-    max-width: 130px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    transition: max-width 0.2s ease, opacity 0.12s ease;
-}
-
-.kb-nav__badge {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-    min-width: 20px;
-    padding: 1px 7px;
-    background: var(--kb-fail-bg);
-    border: 1px solid var(--kb-fail-line);
-    border-radius: 9px;
-    font-size: 10.5px;
-    font-weight: 700;
-    color: var(--kb-fail-ink);
-    text-align: center;
-    transition: right 0.2s ease, min-width 0.2s ease, padding 0.2s ease, font-size 0.2s ease;
-}
-
-.kb-side__foot {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding-top: 14px;
-    transition: gap 0.2s ease;
-}
-
-.kb-side__foot>* {
-    flex: 1 1 auto;
-    min-width: 0;
-    justify-content: center;
-}
-
-.kb-side__btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    padding: 7px 12px;
-    background: transparent;
-    border: 1px solid var(--kb-line-strong);
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--kb-muted);
-    cursor: pointer;
-    transition: border-color 0.15s ease, color 0.15s ease, padding 0.2s ease;
-}
-
-.kb-side__btn:hover {
-    border-color: #d5d9e4;
-    color: var(--kb-ink);
-}
-
-/* Foot labels mask out with the rail — never display:none (not animatable). */
-.kb .theme-trigger>*,
-.kb .lang-trigger>*,
-.kb-side__btn>span {
-    max-width: 160px;
-    overflow: hidden;
-    white-space: nowrap;
-    transition: max-width 0.2s ease, opacity 0.12s ease;
-}
-
-/* ── resting rail + hover overlay ───────────────────────────────
-   The sidebar rests as a 76px icon rail; hovering (or focusing
-   inside) it widens it to 236px OVER the board — position:relative
-   + z-index keep the board from reflowing, so nothing shifts.
-   Only animatable properties change (opacity / max-width /
-   min-height / padding / width): no display or flex-direction
-   flips, which would snap at t=0. Gated to ≥861px so the
-   horizontal mobile sidebar is untouched. */
-@media (min-width: 861px) {
-
-    /* rail space is reserved by the container, not by the sidebar:
-       the sidebar is out of flow, so widening it never reflows .kb-main */
+@media (max-width: 860px) {
     .kb {
-        padding-left: 76px;
+        padding-left: 0;
     }
-
-    .kb-side {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        width: 76px;
-        padding: 22px 12px 18px;
-    }
-
-    .kb-brand {
-        min-height: 76px; /* FIXME */
-        margin-bottom: 20px;
-        padding-left: 10px;
-    }
-
-    .kb-brand>div {
-        max-width: 0;
-        opacity: 0;
-    }
-
-    .kb-nav {
-        gap: 14px;
-    }
-
-    .kb-nav__group {
-        gap: 6px;
-    }
-
-    .kb-nav__section {
-        margin-bottom: 0;
-        opacity: 0;
-    }
-
-    .kb-nav__item {
-        justify-content: flex-start;
-        padding: 10px 10px 10px 18px;
-    }
-
-    .kb-nav__label {
-        max-width: 0;
-        opacity: 0;
-    }
-
-    .kb-nav__badge {
-        right: 3px;
-        min-width: 0;
-        padding: 0 4px;
-        font-size: 9px;
-        line-height: 1.5;
-    }
-
-    .kb-side__foot {
-        gap: 6px;
-    }
-
-    .kb-side__foot>* {
-        width: 100%;
-        justify-content: flex-start;
-    }
-
-    .kb .theme-trigger>*:not(:first-child),
-    .kb .lang-trigger>*:not(:first-child),
-    .kb-side__btn>span {
-        max-width: 0;
-        opacity: 0;
-    }
-
-    .kb .theme-trigger,
-    .kb .lang-trigger,
-    .kb-side__btn {
-        padding-left: 17px;
-    }
-
-    /* hover / focus overlay: expand over the board, no reflow */
-    .kb-side:hover,
-    .kb-side:focus-within {
-        width: 236px;
-        /* padding: 22px 16px 18px; */
-        box-shadow: 14px 0 36px rgba(31, 35, 64, 0.14);
-    }
-
-    .kb-side:hover .kb-brand,
-    .kb-side:focus-within .kb-brand {
-        padding-left: 10px;
-    }
-
-    .kb-side:hover .kb-brand>div,
-    .kb-side:focus-within .kb-brand>div {
-        max-width: 180px;
-        opacity: 1;
-    }
-
-    .kb-side:hover .kb-nav,
-    .kb-side:focus-within .kb-nav {
-        /* gap: 18px; */
-    }
-
-    .kb-side:hover .kb-nav__group,
-    .kb-side:focus-within .kb-nav__group {
-        gap: 6px;
-    }
-
-    .kb-side:hover .kb-nav__section,
-    .kb-side:focus-within .kb-nav__section {
-        opacity: 1;
-    }
-
-    .kb-side:hover .kb-nav__item,
-    .kb-side:focus-within .kb-nav__item {
-        /* justify-content: flex-start; */
-    }
-
-    .kb-side:hover .kb-nav__label,
-    .kb-side:focus-within .kb-nav__label {
-        max-width: 130px;
-        opacity: 1;
-    }
-
-    .kb-side:hover .kb-nav__badge,
-    .kb-side:focus-within .kb-nav__badge {
-        right: 10px;
-        min-width: 20px;
-        padding: 1px 7px;
-        font-size: 10.5px;
-        line-height: normal;
-    }
-
-    .kb-side:hover .kb-side__foot,
-    .kb-side:focus-within .kb-side__foot {
-        gap: 8px;
-    }
-
-    .kb-side:hover .theme-trigger>*:not(:first-child),
-    .kb-side:focus-within .theme-trigger>*:not(:first-child),
-    .kb-side:hover .lang-trigger>*:not(:first-child),
-    .kb-side:focus-within .lang-trigger>*:not(:first-child),
-    .kb-side:hover .kb-side__btn>span,
-    .kb-side:focus-within .kb-side__btn>span {
-        max-width: 160px;
-        opacity: 1;
-    }
-
-    .kb-side:hover .theme-trigger,
-    .kb-side:focus-within .theme-trigger,
-    .kb-side:hover .lang-trigger,
-    .kb-side:focus-within .lang-trigger {
-        padding-left: 13px;
-    }
-
-    .kb-side:hover .kb-side__btn,
-    .kb-side:focus-within .kb-side__btn {
-        padding-left: 13px;
-    }
-}
-
-/* The board is a light surface by design: the shell's theme/lang controls
-   keep the light palette inside .kb even when the app is in dark mode. */
-.kb .theme-trigger,
-.kb .lang-trigger {
-    color: var(--kb-ink-soft);
-    border-color: var(--kb-line-strong);
-    background: #ffffff;
-    transition: padding 0.2s ease;
-}
-
-.kb .theme-trigger:hover,
-.kb .lang-trigger:hover {
-    border-color: #d5d9e4;
-    color: var(--kb-ink);
-}
-
-.kb .theme-dropdown {
-    background: #ffffff;
-    border-color: var(--kb-line);
-    box-shadow: 0 12px 32px rgba(31, 35, 64, 0.16);
-}
-
-.kb .theme-dropdown-item {
-    color: var(--kb-ink-soft);
-}
-
-.kb .theme-dropdown-item:hover,
-.kb .theme-dropdown-item.active {
-    background: #eef1ff;
-    color: #3559d1;
 }
 
 /* ── main column ──────────────────────────────────────────────── */
@@ -541,7 +158,7 @@ body:has(.kb) footer {
 }
 
 .kb-search:hover {
-    background: #f4f5f9;
+    background: var(--kb-wash);
     color: var(--kb-ink);
 }
 
@@ -560,11 +177,11 @@ body:has(.kb) footer {
 }
 
 .kb-bell:hover {
-    background: #f4f5f9;
+    background: var(--kb-wash);
     color: var(--kb-ink);
 }
 
-.kb-bell__dot {
+.kb-bell-dot {
     position: absolute;
     top: 8px;
     right: 9px;
@@ -592,7 +209,7 @@ body:has(.kb) footer {
     text-wrap: balance;
 }
 
-.kb-title__sub {
+.kb-title-sub {
     margin: 6px 0 0;
     max-width: 62ch;
     font-size: 13.5px;
@@ -620,7 +237,7 @@ body:has(.kb) footer {
 }
 
 /* navy hero */
-.kb-hero {
+.hero {
     display: flex;
     flex-direction: column;
     padding: 20px 22px;
@@ -630,7 +247,7 @@ body:has(.kb) footer {
     flex-shrink: 0;
 }
 
-.kb-hero__cap {
+.hero-cap {
     margin: 0;
     font-size: 11px;
     font-weight: 700;
@@ -639,7 +256,7 @@ body:has(.kb) footer {
     color: #b9bef2;
 }
 
-.kb-hero__n {
+.hero-n {
     margin: 6px 0 0;
     font-size: 64px;
     font-weight: 800;
@@ -649,14 +266,14 @@ body:has(.kb) footer {
     font-variant-numeric: tabular-nums;
 }
 
-.kb-hero__lbl {
+.hero-lbl {
     margin: 4px 0 16px;
     font-size: 13px;
     font-weight: 600;
     color: #c9cdf7;
 }
 
-.kb-hero__wt {
+.hero-wt {
     padding-top: 13px;
     border-top: 1px solid rgba(255, 255, 255, 0.16);
     font-family: var(--kb-mono);
@@ -666,16 +283,16 @@ body:has(.kb) footer {
     overflow-wrap: anywhere;
 }
 
-.kb-hero__wt p {
+.hero-wt p {
     margin: 0 0 6px;
 }
 
-.kb-hero__wt b {
+.hero-wt b {
     color: #fff;
     font-weight: 500;
 }
 
-.kb-hero__wthead {
+.hero-wthead {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -688,7 +305,7 @@ body:has(.kb) footer {
     color: #b9bef2;
 }
 
-.kb-hero__plot {
+.hero-plot {
     display: flex;
     align-items: flex-end;
     gap: 4px;
@@ -696,18 +313,18 @@ body:has(.kb) footer {
     margin-top: auto;
 }
 
-.kb-hero__plot i {
+.hero-plot i {
     flex: 1;
     background: rgba(255, 255, 255, 0.35);
     border-radius: 3px 3px 0 0;
 }
 
-.kb-hero__plot i.is-failed {
+.hero-plot i.is-failed {
     background: var(--kb-coral);
 }
 
 /* chat card — mint bubbles like the reference's message panel */
-.kb-chat {
+.chat {
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -719,7 +336,7 @@ body:has(.kb) footer {
     overflow: hidden;
 }
 
-.kb-chat__head {
+.chat-head {
     margin: 0 0 8px;
     font-size: 12px;
     font-weight: 700;
@@ -728,7 +345,7 @@ body:has(.kb) footer {
     color: var(--kb-muted);
 }
 
-.kb-chat__msgs {
+.chat-msgs {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -738,7 +355,7 @@ body:has(.kb) footer {
     padding-right: 2px;
 }
 
-.kb-msg {
+.msg {
     padding: 10px 13px;
     background: #e7f7ee;
     border-radius: 13px 13px 13px 4px;
@@ -747,18 +364,18 @@ body:has(.kb) footer {
     color: #1f4d3a;
 }
 
-.kb-msg p {
+.msg p {
     margin: 0;
 }
 
-.kb-msg--me {
+.msg--me {
     background: #eef1ff;
     border-radius: 13px 13px 4px 13px;
     margin-left: 22px;
     color: #2b3157;
 }
 
-.kb-msg__who {
+.msg-who {
     display: block;
     margin-bottom: 3px;
     font-family: var(--kb-mono);
@@ -768,7 +385,7 @@ body:has(.kb) footer {
     color: #5c6386;
 }
 
-.kb-chat__input {
+.chat-input {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -802,7 +419,7 @@ body:has(.kb) footer {
     border: none;
 }
 
-.kb-pill {
+.pill {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -814,35 +431,35 @@ body:has(.kb) footer {
     font-weight: 700;
 }
 
-.kb-pill--backlog {
+.pill--backlog {
     background: var(--kb-violet);
 }
 
-.kb-pill--ready {
+.pill--ready {
     background: var(--kb-teal);
 }
 
-.kb-pill--progress {
+.pill--progress {
     background: var(--kb-blue);
 }
 
-.kb-pill--review {
+.pill--review {
     background: var(--kb-green);
 }
 
-.kb-pill__sep {
+.pill-sep {
     opacity: 0.7;
     font-weight: 500;
 }
 
-.kb-pill__dot {
+.pill-dot {
     width: 8px;
     height: 8px;
     background: rgba(255, 255, 255, 0.9);
     border-radius: 50%;
 }
 
-.kb-col__cards {
+.kb-col-cards {
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -851,20 +468,20 @@ body:has(.kb) footer {
     overflow-y: auto;
     padding-right: 2px;
     scrollbar-width: thin;
-    scrollbar-color: #d5d9e4 transparent;
+    scrollbar-color: var(--kb-line-hover) transparent;
 }
 
-.kb-col__cards::-webkit-scrollbar {
+.kb-col-cards::-webkit-scrollbar {
     width: 8px;
 }
 
-.kb-col__cards::-webkit-scrollbar-thumb {
-    background: #d5d9e4;
+.kb-col-cards::-webkit-scrollbar-thumb {
+    background: var(--kb-line-hover);
     border: 2px solid var(--kb-frame);
     border-radius: 6px;
 }
 
-.kb-col__empty {
+.kb-col-empty {
     margin: 2px 0 0;
     padding: 18px 14px;
     border: 1.5px dashed var(--kb-line-strong);
@@ -876,7 +493,7 @@ body:has(.kb) footer {
 }
 
 /* ── cards ────────────────────────────────────────────────────── */
-.kb-card {
+.card {
     padding: 15px 16px 14px;
     /* flat row: hairline border only, no fill (kanban4) */
     background: transparent;
@@ -887,18 +504,18 @@ body:has(.kb) footer {
         border-color 0.18s ease;
 }
 
-.kb-card:hover {
+.card:hover {
     transform: translateY(-2px);
     border-color: #d9dde8;
     box-shadow: var(--kb-shadow-lift);
 }
 
-.kb-card--flagged {
+.card--flagged {
     background: #fff8f5;
     border-color: var(--kb-fail-line);
 }
 
-.kb-card__id {
+.card-id {
     display: inline-block;
     padding: 2px 7px;
     background: var(--kb-col-bg);
@@ -910,7 +527,7 @@ body:has(.kb) footer {
     color: var(--kb-muted);
 }
 
-.kb-card__title {
+.card-title {
     margin: 7px 0 11px;
     font-size: 13.5px;
     font-weight: 600;
@@ -919,14 +536,14 @@ body:has(.kb) footer {
     text-wrap: pretty;
 }
 
-.kb-card__meta {
+.card-meta {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 7px;
 }
 
-.kb-card__date {
+.card-date {
     margin-left: auto;
     font-size: 11.5px;
     font-weight: 500;
@@ -934,7 +551,7 @@ body:has(.kb) footer {
     font-variant-numeric: tabular-nums;
 }
 
-.kb-tag {
+.tag {
     padding: 2px 8px;
     border-radius: 7px;
     font-size: 10.5px;
@@ -942,48 +559,48 @@ body:has(.kb) footer {
     letter-spacing: 0.02em;
 }
 
-.kb-tag--bug {
+.tag--bug {
     background: var(--kb-fail-bg);
     color: var(--kb-fail-ink);
 }
 
-.kb-tag--improvement {
+.tag--improvement {
     background: #eef1ff;
     color: #3d5fd6;
 }
 
-.kb-tag--chore {
+.tag--chore {
     background: #f1f3f9;
     color: #5a648f;
 }
 
-.kb-tag--docs {
+.tag--docs {
     background: var(--kb-done-bg);
     color: var(--kb-done-ink);
 }
 
-.kb-tag--run {
+.tag--run {
     font-family: var(--kb-mono);
     font-weight: 500;
 }
 
-.kb-tag--run-running,
-.kb-tag--run-queued {
+.tag--run-running,
+.tag--run-queued {
     background: var(--kb-run-bg);
     color: var(--kb-run-ink);
 }
 
-.kb-tag--run-failed {
+.tag--run-failed {
     background: var(--kb-fail-strong);
     color: #ffffff;
 }
 
-.kb-tag--run-done {
+.tag--run-done {
     background: var(--kb-done-bg);
     color: var(--kb-done-ink);
 }
 
-.kb-avatar {
+.avatar {
     display: grid;
     place-items: center;
     width: 22px;
@@ -994,19 +611,19 @@ body:has(.kb) footer {
     color: #ffffff;
 }
 
-.kb-avatar--blue {
+.avatar--blue {
     background: var(--kb-blue);
 }
 
-.kb-avatar--green {
+.avatar--green {
     background: var(--kb-green);
 }
 
-.kb-avatar--coral {
+.avatar--coral {
     background: var(--kb-fail-strong);
 }
 
-.kb-avatar--me {
+.avatar--me {
     width: 38px;
     height: 38px;
     background: var(--kb-navy-2);
@@ -1014,7 +631,7 @@ body:has(.kb) footer {
     flex-shrink: 0;
 }
 
-.kb-bar {
+.bar {
     height: 5px;
     margin-top: 10px;
     background: var(--kb-line);
@@ -1022,14 +639,14 @@ body:has(.kb) footer {
     overflow: hidden;
 }
 
-.kb-bar__fill {
+.bar-fill {
     display: block;
     height: 100%;
     background: var(--kb-blue);
     border-radius: 4px;
 }
 
-.kb-bar__fill--done {
+.bar-fill--done {
     background: var(--kb-green);
 }
 
@@ -1058,18 +675,18 @@ body:has(.kb) footer {
         flex-wrap: wrap;
     }
 
-    .kb-hero {
+    .hero {
         flex: 1;
         min-width: 260px;
     }
 
-    .kb-chat {
+    .chat {
         flex: 1;
         min-width: 260px;
         max-height: none;
     }
 
-    .kb-chat__msgs {
+    .chat-msgs {
         min-height: 0;
         overflow: visible;
     }
@@ -1087,42 +704,6 @@ body:has(.kb) footer {
 @media (max-width: 860px) {
     .kb {
         flex-direction: column;
-    }
-
-    .kb-side {
-        width: 100%;
-        padding: 14px 16px;
-    }
-
-    .kb-brand {
-        margin-bottom: 12px;
-    }
-
-    .kb-nav {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 8px;
-        overflow: visible;
-    }
-
-    .kb-nav__section {
-        display: none;
-    }
-
-    .kb-nav__group {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 6px;
-    }
-
-    .kb-nav__item {
-        flex: 1 1 auto;
-        min-width: 0;
-    }
-
-    .kb-side__foot {
-        padding-top: 10px;
     }
 
     .kb-main {
@@ -1147,30 +728,11 @@ body:has(.kb) footer {
 }
 
 @media (prefers-reduced-motion: reduce) {
-
-    .kb-card,
-    .kb-nav__item,
-    .kb-bell,
-    .kb-side__btn,
-    .kb-side,
-    .kb-brand,
-    .kb-brand>div,
-    .kb-nav,
-    .kb-nav__group,
-    .kb-nav__section,
-    .kb-nav__label,
-    .kb-nav__badge,
-    .kb-side__foot,
-    .kb-side__foot>*,
-    .kb .theme-trigger,
-    .kb .lang-trigger,
-    .kb .theme-trigger>*,
-    .kb .lang-trigger>*,
-    .kb-side__btn>span {
+    .card {
         transition: none;
     }
 
-    .kb-card:hover {
+    .card:hover {
         transform: none;
     }
 }

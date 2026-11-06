@@ -1,0 +1,402 @@
+/* Sidebar — brand, grouped nav, foot controls.
+   Imported by the shared Sidebar component. Class names carry no block prefix:
+   they are unique enough to stand alone and are nested under the sidebar
+   element (`.side`, `nav`, `brand`, `side-foot`), so nothing leaks sideways.
+   The palette custom properties come from the page root (`.kb`) — every one is
+   referenced with a literal fallback so the sidebar also styles correctly when
+   it is rendered outside a `.kb` page. */
+
+/* ── sidebar ──────────────────────────────────────────────────── */
+.side {
+    position: relative;
+    z-index: 30;
+    /* hover expansion overlays .main instead of pushing it */
+    display: flex;
+    flex-direction: column;
+    width: 236px;
+    min-width: 0;
+    flex-shrink: 0;
+    padding: 22px 16px 18px;
+    background: var(--kb-frame, #ffffff);
+    transition: width 0.2s ease, padding 0.2s ease, box-shadow 0.2s ease;
+}
+
+.side-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 36px;
+    padding: 0 8px;
+    margin-bottom: 26px;
+    transition: min-height 0.2s ease, margin-bottom 0.2s ease, padding 0.2s ease;
+}
+
+.side-brand>div {
+    max-width: 180px;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width 0.2s ease, opacity 0.12s ease;
+}
+
+.side-brand-logo {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    background: var(--kb-navy-2, #2b2f6b);
+    color: var(--kb-frame, #ffffff);
+    border-radius: 11px;
+    font-weight: 800;
+    font-size: 16px;
+}
+
+.side-brand b {
+    display: block;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+
+.side-brand>div>span {
+    display: block;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--kb-faint);
+}
+
+.side-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    transition: gap 0.2s ease;
+}
+
+.side-nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    transition: gap 0.2s ease;
+}
+
+.side-nav-section {
+    /* height is constant in both states — only opacity/margin animate,
+       so the text never appears to grow or shrink */
+    height: 18px;
+    overflow: hidden;
+    margin: 0 0 6px;
+    padding: 0 10px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--kb-faint);
+    transition: margin-bottom 0.2s ease, opacity 0.12s ease;
+}
+
+.side-nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 11px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--kb-ink-soft);
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease, padding 0.2s ease;
+}
+
+.side-nav-item:hover {
+    background: var(--kb-wash, #f4f5f9);
+    color: var(--kb-ink);
+}
+
+.side-nav-item--on {
+    background: #eef1ff;
+    color: #3559d1;
+    font-weight: 600;
+}
+
+.side-nav-label {
+    min-width: 0;
+    max-width: 130px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    transition: max-width 0.2s ease, opacity 0.12s ease;
+}
+
+.side-nav-badge {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    min-width: 20px;
+    padding: 1px 7px;
+    background: var(--kb-fail-bg);
+    border: 1px solid var(--kb-fail-line);
+    border-radius: 9px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--kb-fail-ink);
+    text-align: center;
+    transition: right 0.2s ease, min-width 0.2s ease, padding 0.2s ease, font-size 0.2s ease;
+}
+
+.side-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 14px;
+    transition: gap 0.2s ease;
+}
+
+.side-foot>* {
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: center;
+}
+
+.side-logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 7px 12px;
+    background: transparent;
+    border: 1px solid var(--kb-line-strong);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--kb-muted);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, padding 0.2s ease;
+}
+
+.side-logout:hover {
+    border-color: var(--kb-line-hover, #d5d9e4);
+    color: var(--kb-ink);
+}
+
+/* Foot controls (theme/language/logout) share one button shape. The selectors
+   are attached to the sidebar itself — only foot descendants are dressed — so
+   the shell header's own trigger keeps its global styling. */
+.side .menu-trigger {
+    justify-content: center;
+    width: 100%;
+    padding: 7px 12px;
+    background: var(--kb-frame, #ffffff);
+    border: 1px solid var(--kb-line-strong);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--kb-muted);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, padding 0.2s ease;
+}
+
+.side .menu-trigger:hover {
+    border-color: var(--kb-line-hover, #d5d9e4);
+    color: var(--kb-ink);
+}
+
+.side .menu-trigger:disabled {
+    cursor: default;
+    opacity: 1;
+}
+
+/* Foot labels mask out with the rail — never display:none (not animatable). */
+.side .menu-trigger>*,
+.side-logout>span {
+    max-width: 160px;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width 0.2s ease, opacity 0.12s ease;
+}
+
+/* ── resting rail + hover overlay ───────────────────────────────
+   The sidebar rests as a 76px icon rail; hovering (or focusing
+   inside) it widens it to 236px OVER the board — position:relative
+   + z-index keep the board from reflowing, so nothing shifts.
+   Only animatable properties change (opacity / max-width /
+   min-height / padding / width): no display or flex-direction
+   flips, which would snap at t=0. Gated to ≥861px so the
+   horizontal mobile sidebar is untouched. */
+@media (min-width: 861px) {
+
+    /* rail space is reserved by the page root (`.kb { padding-left: 76px }`,
+       in the board stylesheet), not by the sidebar: it is out of flow, so
+       widening it never reflows the main column. */
+    .side {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 76px;
+        padding: 22px 12px 18px;
+    }
+
+    .side-brand {
+        min-height: 76px;
+        margin-bottom: 20px;
+        padding-left: 10px;
+    }
+
+    .side-brand>div {
+        max-width: 0;
+        opacity: 0;
+    }
+
+    .side-nav {
+        gap: 14px;
+    }
+
+    .side-nav-group {
+        gap: 6px;
+    }
+
+    .side-nav-section {
+        margin-bottom: 0;
+        opacity: 0;
+    }
+
+    .side-nav-item {
+        justify-content: flex-start;
+        padding: 10px 10px 10px 18px;
+    }
+
+    .side-nav-label {
+        max-width: 0;
+        opacity: 0;
+    }
+
+    .side-nav-badge {
+        right: 3px;
+        min-width: 0;
+        padding: 0 4px;
+        font-size: 9px;
+        line-height: 1.5;
+    }
+
+    .side-foot {
+        gap: 6px;
+    }
+
+    .side-foot>* {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .side .menu-trigger>*:not(:first-child),
+    .side-logout>span {
+        max-width: 0;
+        opacity: 0;
+    }
+
+    .side .menu-trigger,
+    .side-logout {
+        padding-left: 17px;
+    }
+
+    /* hover / focus overlay: expand over the board, no reflow */
+    .side:is(:hover, :focus-within) {
+        width: 236px;
+        box-shadow: 14px 0 36px rgba(31, 35, 64, 0.14);
+    }
+
+    .side:is(:hover, :focus-within) .side-brand {
+        padding-left: 10px;
+    }
+
+    .side:is(:hover, :focus-within) .side-brand>div {
+        max-width: 180px;
+        opacity: 1;
+    }
+
+    .side:is(:hover, :focus-within) .side-nav-group {
+        gap: 6px;
+    }
+
+    .side:is(:hover, :focus-within) .side-nav-section {
+        opacity: 1;
+    }
+
+    .side:is(:hover, :focus-within) .side-nav-label {
+        max-width: 130px;
+        opacity: 1;
+    }
+
+    .side:is(:hover, :focus-within) .side-nav-badge {
+        right: 10px;
+        min-width: 20px;
+        padding: 1px 7px;
+        font-size: 10.5px;
+        line-height: normal;
+    }
+
+    .side:is(:hover, :focus-within) .side-foot {
+        gap: 8px;
+    }
+
+    .side:is(:hover, :focus-within) .menu-trigger>*:not(:first-child),
+    .side:is(:hover, :focus-within) .side-logout>span {
+        max-width: 160px;
+        opacity: 1;
+    }
+
+    .side:is(:hover, :focus-within) .menu-trigger,
+    .side:is(:hover, :focus-within) .side-logout {
+        padding-left: 13px;
+    }
+}
+
+/* The board is a light surface by design: the dropdown keeps the light palette
+   inside .kb even when the app is in dark mode. The panel is portalled out of
+   the sidebar, so these selectors are scoped to the page root instead of the
+   sidebar element. */
+.kb .menu-panel {
+    background: var(--kb-frame, #ffffff);
+    border-color: var(--kb-line);
+    box-shadow: 0 12px 32px rgba(31, 35, 64, 0.16);
+}
+
+.kb .menu-item {
+    color: var(--kb-ink-soft);
+}
+
+.kb .menu-item:hover,
+.kb .menu-item--on {
+    background: #eef1ff;
+    color: #3559d1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .side,
+    .side-brand,
+    .side-brand>div,
+    .side-nav,
+    .side-nav-group,
+    .side-nav-section,
+    .side-nav-label,
+    .side-nav-badge,
+    .side-foot,
+    .side-foot>*,
+    .side .menu-trigger,
+    .side .menu-trigger>*,
+    .side-logout,
+    .side-logout>span {
+        transition: none;
+    }
+}

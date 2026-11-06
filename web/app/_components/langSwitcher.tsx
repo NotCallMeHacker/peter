@@ -2,9 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { Globe, ChevronDown } from "lucide-react";
+import { Globe } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { MenuButton } from "./menuButton";
 
 const locales = [
     { key: "en", label: "English" },
@@ -24,25 +24,13 @@ export function LangSwitcher({ currentLocale }: { currentLocale: string }) {
     }
 
     return (
-        <DropdownMenu.Root>
-            <DropdownMenu.Trigger className="lang-trigger" aria-label={t("changeLanguage")}>
-                <Globe size={16} />
-                <span>{locales.find((l) => l.key === currentLocale)?.label ?? currentLocale}</span>
-                <ChevronDown size={14} />
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Portal>
-                <DropdownMenu.Content className="theme-dropdown" sideOffset={4} align="end">
-                    {locales.map(({ key, label }) => (
-                        <DropdownMenu.Item
-                            key={key}
-                            className={`theme-dropdown-item${currentLocale === key ? " active" : ""}`}
-                            onSelect={() => switchLocale(key)}
-                        >
-                            {label}
-                        </DropdownMenu.Item>
-                    ))}
-                </DropdownMenu.Content>
-            </DropdownMenu.Portal>
-        </DropdownMenu.Root>
+        <MenuButton
+            label={t("changeLanguage")}
+            icon={Globe}
+            value={locales.find((l) => l.key === currentLocale)?.label ?? currentLocale}
+            options={locales}
+            activeKey={currentLocale}
+            onSelect={switchLocale}
+        />
     );
 }
