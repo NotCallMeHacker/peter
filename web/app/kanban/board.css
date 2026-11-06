@@ -57,6 +57,7 @@
     height: 100vh;
     min-height: 620px;
     min-width: 0;
+    width: 100%;
     background: var(--kb-page);
     color: var(--kb-ink);
     font-family: var(--kb-font);
@@ -396,6 +397,10 @@ body:has(.kb) footer {
     border-radius: 12px;
     font-size: 12.5px;
     color: var(--kb-faint);
+}
+
+.chat-input svg {
+    flex-shrink: 0;
 }
 
 /* ── columns ──────────────────────────────────────────────────── */

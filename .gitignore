@@ -14,3 +14,5 @@ web/node_modules/*
 .impeccable/*
 DESIGN.md
 PRODUCT.md
+package.json
+package-lock.json

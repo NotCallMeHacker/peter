@@ -21,6 +21,10 @@
     transition: width 0.2s ease, padding 0.2s ease, box-shadow 0.2s ease;
 }
 
+.side svg {
+    flex-shrink: 0;
+}
+
 .side-brand {
     display: flex;
     align-items: center;
