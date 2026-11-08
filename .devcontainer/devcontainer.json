@@ -19,6 +19,13 @@
 		"8000": {
 			"label": "Supabase Interface"
 		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"oderwat.indent-rainbow"
+			]
+		}
 	}
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
