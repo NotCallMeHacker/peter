@@ -11,7 +11,13 @@ const locales = [
     { key: "de", label: "Deutsch" },
 ];
 
-export function LangSwitcher({ currentLocale }: { currentLocale: string }) {
+export function LangSwitcher({
+    currentLocale,
+    className,
+}: {
+    currentLocale: string;
+    className?: string;
+}) {
     const router = useRouter();
     const t = useTranslations("common");
     const [, startTransition] = useTransition();
@@ -25,6 +31,7 @@ export function LangSwitcher({ currentLocale }: { currentLocale: string }) {
 
     return (
         <MenuButton
+            className={className}
             label={t("changeLanguage")}
             icon={Globe}
             value={locales.find((l) => l.key === currentLocale)?.label ?? currentLocale}

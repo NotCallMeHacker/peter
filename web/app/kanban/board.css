@@ -15,20 +15,27 @@
 
 /* ── Studio Workflow world tokens ─────────────────────────────── */
 .kb {
-    /* ground: white page, light neutral columns — no blue field */
-    --kb-page: #ffffff;
+    /* ground: the blue gradient page (declared on the route container below,
+       where it paints) veiled by a 36% white — kanban4's panel was never
+       opaque, it is a translucent sheet over that same field, which is why its
+       interior tracked the page gradient point for point. Full bleed, so the
+       veil *is* the ground instead of a card floating on it. */
+    --kb-panel: rgba(255, 255, 255, 0.36);
+    --kb-card: #ffffff;
     --kb-frame: #ffffff;
     --kb-wash: #f4f5f9;
     --kb-line-hover: #d5d9e4;
-    /* tint kept for search field + id chips; columns/cards are flat (no wells) */
+    /* tint kept for search field + id chips; cards are white wells on the veil */
     --kb-col-bg: #f6f7f9;
     --kb-line: #e8eaf0;
     --kb-line-strong: #eceef2;
-    /* ink */
+    /* ink — the secondary steps sit on the veil, whose darkest corner (the
+       field's upper-left) lands near #B4C6E0, so they are mixed darker than a
+       white ground would need: 4.5:1+ everywhere on the tint */
     --kb-ink: #1f2340;
-    --kb-ink-soft: #4a5078;
-    --kb-muted: #646a8f;
-    --kb-faint: #666d92;
+    --kb-ink-soft: #3c4266;
+    --kb-muted: #454c72;
+    --kb-faint: #4e5580;
     /* world */
     --kb-navy-1: #343a87;
     --kb-navy-2: #2b2f6b;
@@ -37,6 +44,11 @@
     --kb-blue: #3b66e8;
     --kb-green: #147a50;
     --kb-coral: #f4643c;
+    /* column headers, sampled off the kanban4 reference */
+    --kb-pill-violet: #9491dd;
+    --kb-pill-teal: #3fc6bf;
+    --kb-pill-blue: #4c90f3;
+    --kb-pill-green: #53c88e;
     /* signals */
     --kb-fail-ink: #b3452a;
     --kb-fail-strong: #b3452a;
@@ -51,14 +63,17 @@
     --kb-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
     /* depth */
     --kb-shadow-lift: 0 10px 24px rgba(31, 35, 64, 0.12);
+    --kb-shadow-card: 0 2px 8px rgba(48, 70, 134, 0.08);
 
     position: relative;
     display: flex;
-    height: 100vh;
-    min-height: 620px;
+    /* the route container is exactly `100dvh` with no padding, so the board is
+       full bleed — and the page itself never scrolls (`.kb` does, internally) */
+    height: 100dvh;
+    min-height: 0;
     min-width: 0;
     width: 100%;
-    background: var(--kb-page);
+    background: var(--kb-panel);
     color: var(--kb-ink);
     font-family: var(--kb-font);
     font-size: 14.5px;
@@ -94,21 +109,51 @@
     border-radius: 6px;
 }
 
-/* White ground on the route — replaces the shell's image/blue field, and the
-   board carries its own chrome (sidebar, search, bell, avatar), so the shell's
-   demo header and footer stay out of the way on this route only. */
+/* Blue gradient ground on the route — replaces the shell's image field, and
+   the board carries its own chrome (sidebar, search, bell, avatar), so the
+   shell's demo header and footer stay out of the way on this route only.
+   Full bleed: no gutter, no frame — `.kb` lays straight over this field and
+   veils it, rather than sitting in a card on top of it. */
 #home-container:has(.kb) {
-    background: var(--kb-page, #ffffff);
-    padding: 0;
-    /* the route owns its height — the shell must not stretch it */
+    /* deepest blue in a patch down the upper-left edge and a whisper of it in
+       the bottom-right corner, a white bloom through the centre-right */
+    --kb-page:
+        radial-gradient(
+            45% 26% at -6% 19%,
+            rgba(104, 134, 192, 0.92) 0%,
+            rgba(140, 166, 210, 0.35) 50%,
+            rgba(155, 180, 215, 0) 100%
+        ),
+        radial-gradient(
+            46% 40% at 104% 104%,
+            rgba(118, 146, 200, 0.3) 0%,
+            rgba(155, 180, 215, 0) 100%
+        ),
+        radial-gradient(
+            92% 86% at 72% 62%,
+            rgba(255, 255, 255, 1) 0%,
+            rgba(255, 255, 255, 0.9) 42%,
+            rgba(255, 255, 255, 0.4) 78%,
+            rgba(255, 255, 255, 0) 105%
+        ),
+        linear-gradient(160deg, #9db4d9 0%, #a4b9dd 25%, #b7c7e7 50%, #cdd7ef 75%, #d9e0f3 100%);
+    box-sizing: border-box;
+    height: 100dvh;
     min-height: 0;
+    padding: 0;
+    background: var(--kb-page);
+    /* clip, never scroll: a stray pixel of overflow must not hand the page a
+       scrollbar. The clip edge is the padding box — i.e. the whole viewport —
+       so the fixed mobile menu sits inside it whatever happens. */
+    overflow: hidden;
+    overflow: clip;
 }
 
 /* The shell sizes itself to `100vh`, which on a phone is the *large* viewport:
    taller than what is on screen whenever the URL bar is showing, so a few
    phantom pixels of page scroll appear at the bottom. This route locks its own
-   height instead (`.kb { height: 100dvh }` below), so the wrapper only has to
-   be as tall as its content. */
+   height instead (the container is `height: 100dvh` above), so the wrapper only
+   has to be as tall as its content. */
 body:has(.kb)>.app-container {
     min-height: 100vh;
     min-height: 100dvh;
@@ -131,6 +176,68 @@ body:has(.kb) .separator-line {
     padding-left: 76px;
 }
 
+/* The sidebar rides the ground: no tint at rest, so the veiled blue field
+   (darkest in that top-left corner, exactly as in the reference) shows
+   straight through it — nothing sits behind the rail, so its blur is parked at
+   0. On expand it becomes a translucent frosted sheet over the board: opaque
+   enough that cards don't print through and every label keeps 4.5:1,
+   translucent enough that the blur reads. Tint and frost start *together* —
+   both hold 0.08s — and only then diverge: the frost lands sooner (0.12s) than
+   the tint (0.2s). They may never be given different delays: the panel starts
+   widening at 0ms and reaches the title's "K" (~x122) around 58ms, so a blur
+   that leads the tint blurs text for a frame or two with no sheet over it,
+   which reads as a rendering glitch rather than as glass. A transition takes
+   its timing from the *destination* state, so each side declares its own list
+   — the close direction runs without the hold and clears a touch quicker. */
+@media (min-width: 861px) {
+    .kb .side {
+        /* The tint is a *colour*, not a gradient: Chrome will not run a
+           transition on `background-image` between these two gradients — it
+           snaps the value instead and the declared delay is ignored (measured:
+           the tint flipped 0 → 0.82 the instant the pointer landed and back on
+           exit, while width / box-shadow / backdrop-filter all waited the
+           dwell). Colours interpolate everywhere; the 150° diagonal this
+           replaces was a ~4-unit difference across a 76px rail — invisible. */
+        background-color: rgba(242, 246, 254, 0);
+        -webkit-backdrop-filter: blur(0px);
+        backdrop-filter: blur(0px);
+        /* closing: no hold — the sheet clears as the rail collapses */
+        transition:
+            background-color 0.16s ease,
+            backdrop-filter 0.12s ease,
+            -webkit-backdrop-filter 0.12s ease,
+            width 0.2s ease,
+            padding 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .kb .side:is(:hover, :focus-within) {
+        background-color: rgba(242, 246, 254, 0.84);
+        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(16px);
+        /* opening: one shared dwell (`--kb-rail-delay`, on `.side`) before
+           anything moves, so a mouse flick across the rail never flashes tint
+           or section text; then frost and tint start together (they must never
+           get *different* delays) and the frost lands first. */
+        transition:
+            background-color 0.2s ease var(--kb-rail-delay, 0.15s),
+            backdrop-filter 0.12s ease var(--kb-rail-delay, 0.15s),
+            -webkit-backdrop-filter 0.12s ease var(--kb-rail-delay, 0.15s),
+            width 0.2s ease var(--kb-rail-delay, 0.15s),
+            padding 0.2s ease var(--kb-rail-delay, 0.15s),
+            box-shadow 0.2s ease var(--kb-rail-delay, 0.15s);
+    }
+}
+
+/* The full-screen menu goes frosted too: the solid `--kb-frame` would hide the
+   blur behind it. 0.88 white keeps the worst case (the navy hero smeared
+   behind it) above 6:1 for every ink step. */
+@media (max-width: 860px) {
+    .kb .side {
+        background: rgba(255, 255, 255, 0.88);
+    }
+}
+
 @media (max-width: 860px) {
     .kb {
         padding-left: 0;
@@ -145,6 +252,15 @@ body:has(.kb) .separator-line {
     min-width: 0;
     min-height: 0;
     padding: 0 26px 18px;
+}
+
+/* Title and note hold their natural height at every width (the ≤860px block
+   extends this to the whole main column). With no min-height floor left on
+   `.kb` — full bleed means it can never outgrow the viewport — a viewport too
+   short for the board lets `.kb` scroll instead of squashing the chrome. */
+.kb-main>.kb-title,
+.kb-main>.kb-note {
+    flex-shrink: 0;
 }
 
 /* top bar: bell, avatar, search icon — no divider. Scoped under .kb so it
@@ -172,8 +288,10 @@ body:has(.kb) .separator-line {
     transition: background 0.15s ease, color 0.15s ease;
 }
 
+/* a white chip reads as a hover state over the tinted veil; a neutral wash
+   would sit on almost the same value as the ground and disappear */
 .kb-search:hover {
-    background: var(--kb-wash);
+    background: #ffffff;
     color: var(--kb-ink);
 }
 
@@ -192,7 +310,7 @@ body:has(.kb) .separator-line {
 }
 
 .kb-bell:hover {
-    background: var(--kb-wash);
+    background: #ffffff;
     color: var(--kb-ink);
 }
 
@@ -453,7 +571,7 @@ body:has(.kb) .separator-line {
     min-width: 0;
     min-height: 0;
     padding: 14px 8px;
-    /* kanban4: columns are not wells — pills + cards float on the white ground */
+    /* kanban4: columns are not wells — pills + cards float on the veil */
     background: transparent;
     border: none;
 }
@@ -471,19 +589,19 @@ body:has(.kb) .separator-line {
 }
 
 .pill--backlog {
-    background: var(--kb-violet);
+    background: var(--kb-pill-violet);
 }
 
 .pill--ready {
-    background: var(--kb-teal);
+    background: var(--kb-pill-teal);
 }
 
 .pill--progress {
-    background: var(--kb-blue);
+    background: var(--kb-pill-blue);
 }
 
 .pill--review {
-    background: var(--kb-green);
+    background: var(--kb-pill-green);
 }
 
 .pill-sep {
@@ -491,11 +609,23 @@ body:has(.kb) .separator-line {
     font-weight: 500;
 }
 
+/* circled plus at the pill's right edge — the header affordance in the
+   reference (a lone dot read as a status LED) */
 .pill-dot {
-    width: 8px;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.9);
+    display: grid;
+    place-items: center;
+    width: 17px;
+    height: 17px;
+    background: transparent;
+    border: 1.5px solid rgba(255, 255, 255, 0.85);
     border-radius: 50%;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.pill-dot::after {
+    content: "+";
 }
 
 /* Card lists scroll, but never show a scrollbar: wheel / touch / keyboard all
@@ -529,11 +659,11 @@ body:has(.kb) .separator-line {
 /* ── cards ────────────────────────────────────────────────────── */
 .card {
     padding: 15px 16px 14px;
-    /* flat row: hairline border only, no fill (kanban4) */
-    background: transparent;
-    border: 1px solid var(--kb-line);
+    /* white wells standing on the veiled blue ground (kanban4) */
+    background: var(--kb-card);
+    border: 1px solid #eef0f8;
     border-radius: 14px;
-    box-shadow: 0 1px 2px rgba(31, 35, 64, 0.04);
+    box-shadow: var(--kb-shadow-card);
     transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease,
         border-color 0.18s ease;
 }
@@ -694,10 +824,9 @@ body:has(.kb) .separator-line {
 /* ── responsive ───────────────────────────────────────────────── */
 
 @media (max-width: 1180px) {
-    .kb {
-        height: auto;
-        min-height: calc(100vh - 208px);
-    }
+    /* The board stays exactly viewport-sized: wrapped rows overflow `.kb-main`
+       and `.kb` scrolls them itself (`overflow-y: auto`) — the full-bleed
+       ground never grows a page scrollbar of its own. */
 
     /* back to flex: rows may wrap, and the column row can overflow its box
        (min-width 260px items) — flex lets it scroll instead of overlapping */
@@ -745,8 +874,6 @@ body:has(.kb) .separator-line {
        viewport, so the page itself has nothing to scroll. */
     .kb {
         flex-direction: column;
-        height: 100vh;
-        height: 100dvh;
         min-height: 0;
     }
 
@@ -863,5 +990,13 @@ body:has(.kb) .separator-line {
 
     .card:hover {
         transform: none;
+    }
+
+    /* The panel's transitions live at (0,2,0) *and* (0,3,0) — the latter is
+       the open state — so both selectors have to be cancelled here; the
+       sidebar sheet's own reduced-motion rule is outranked either way. */
+    .kb .side,
+    .kb .side:is(:hover, :focus-within) {
+        transition: none;
     }
 }

@@ -17,8 +17,26 @@
     min-width: 0;
     flex-shrink: 0;
     padding: 22px 16px 18px;
+    /* Hover intent: nothing in the rail — panel, tint, frost, section titles,
+       labels, badge — starts until the pointer has dwelt this long, so flicking
+       the mouse across the sidebar produces no flash of tint or section text.
+       Applies to the *opening* direction only: the closing rules are the
+       rest-state ones, which carry no delay. Raise if slow sweeps still flash;
+       lower if the rail feels laggy. */
+    --kb-rail-delay: 0.15s;
     background: var(--kb-frame, #ffffff);
-    transition: width 0.2s ease, padding 0.2s ease, box-shadow 0.2s ease;
+    /* frosted: the panel is a translucent sheet over the field — and, once it
+       expands, over the board — so whatever is behind it reads as a soft wash.
+       Needs a translucent background to show; the page root supplies that. */
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    transition:
+        width 0.2s ease,
+        padding 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease,
+        backdrop-filter 0.2s ease,
+        -webkit-backdrop-filter 0.2s ease;
 }
 
 .side svg {
@@ -104,29 +122,11 @@
     transition: margin-bottom 0.2s ease, opacity 0.12s ease;
 }
 
+/* Shape, hover and rhythm come from the shared row base further down; a nav
+   link adds only what rows don't have — `position` to anchor the badge. The
+   `--on` state sits next to the base, where it can out-specify it. */
 .side-nav-item {
     position: relative;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 10px;
-    border-radius: 11px;
-    font-size: 13.5px;
-    font-weight: 500;
-    color: var(--kb-ink-soft);
-    text-decoration: none;
-    transition: background 0.15s ease, color 0.15s ease, padding 0.2s ease;
-}
-
-.side-nav-item:hover {
-    background: var(--kb-wash, #f4f5f9);
-    color: var(--kb-ink);
-}
-
-.side-nav-item--on {
-    background: #eef1ff;
-    color: #3559d1;
-    font-weight: 600;
 }
 
 .side-nav-label {
@@ -157,62 +157,59 @@
 
 .side-foot {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    flex-direction: column;
+    gap: 6px;
     padding-top: 14px;
     transition: gap 0.2s ease;
 }
 
 .side-foot>* {
-    flex: 1 1 auto;
+    width: 100%;
     min-width: 0;
-    justify-content: center;
 }
 
-.side-logout {
+/* ── row base ────────────────────────────────────────────────
+   One shape for every interactive row in the sidebar: nav links, the theme
+   and language triggers, and logout are all `.side-row`, so they share one
+   rhythm, one radius and one hover. The triggers come from the generic
+   MenuButton — which also renders in the shell header — so they carry the
+   class from `Sidebar` (`className="side-row"`) rather than being dressed by
+   a `.side` descendant rule; the header's own trigger keeps its global style.
+   Deltas stay on their own classes: `position`/`--on`/badge for nav links,
+   `:disabled` and the label mask for the triggers, nothing for logout.
+   Scoped to `.side` on purpose: `.menu-trigger` is also styled globally for
+   the shell header, and `.side .side-row` must win there without depending on
+   which bundle the two stylesheets land in. */
+.side .side-row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
-    padding: 7px 12px;
+    min-width: 0;
+    padding: 9px 10px;
     background: transparent;
-    border: 1px solid var(--kb-line-strong);
-    border-radius: 10px;
+    border: 0;
+    border-radius: 11px;
     font-family: inherit;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--kb-muted);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--kb-ink-soft, #3c4266);
+    text-align: left;
+    text-decoration: none;
     cursor: pointer;
-    transition: border-color 0.15s ease, color 0.15s ease, padding 0.2s ease;
+    transition: background 0.15s ease, color 0.15s ease, padding 0.2s ease;
 }
 
-.side-logout:hover {
-    border-color: var(--kb-line-hover, #d5d9e4);
-    color: var(--kb-ink);
+.side .side-row:hover {
+    background: var(--kb-wash, #f4f5f9);
+    color: var(--kb-ink, #1f2340);
 }
 
-/* Foot controls (theme/language/logout) share one button shape. The selectors
-   are attached to the sidebar itself — only foot descendants are dressed — so
-   the shell header's own trigger keeps its global styling. */
-.side .menu-trigger {
-    justify-content: center;
-    width: 100%;
-    padding: 7px 12px;
-    background: var(--kb-frame, #ffffff);
-    border: 1px solid var(--kb-line-strong);
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 12.5px;
+/* state that must beat the base */
+.side .side-nav-item--on {
+    background: #eef1ff;
+    color: #3559d1;
     font-weight: 600;
-    color: var(--kb-muted);
-    cursor: pointer;
-    transition: border-color 0.15s ease, color 0.15s ease, padding 0.2s ease;
-}
-
-.side .menu-trigger:hover {
-    border-color: var(--kb-line-hover, #d5d9e4);
-    color: var(--kb-ink);
 }
 
 .side .menu-trigger:disabled {
@@ -275,7 +272,7 @@
         opacity: 0;
     }
 
-    .side-nav-item {
+    .side .side-row {
         justify-content: flex-start;
         padding: 10px 10px 10px 18px;
     }
@@ -308,11 +305,6 @@
         opacity: 0;
     }
 
-    .side .menu-trigger,
-    .side-logout {
-        padding-left: 17px;
-    }
-
     /* hover / focus overlay: expand over the board, no reflow */
     .side:is(:hover, :focus-within) {
         width: 236px;
@@ -326,19 +318,29 @@
     .side:is(:hover, :focus-within) .side-brand>div {
         max-width: 180px;
         opacity: 1;
+        transition:
+            max-width 0.2s ease var(--kb-rail-delay),
+            opacity 0.12s ease var(--kb-rail-delay);
     }
 
     .side:is(:hover, :focus-within) .side-nav-group {
         gap: 6px;
     }
 
+    /* every reveal restates its transition with the dwell: a transition takes
+       its timing from the *destination* state, so the hold only exists while
+       opening — closing stays immediate (rest-state rules, no delay). */
     .side:is(:hover, :focus-within) .side-nav-section {
         opacity: 1;
+        transition: opacity 0.12s ease var(--kb-rail-delay);
     }
 
     .side:is(:hover, :focus-within) .side-nav-label {
         max-width: 130px;
         opacity: 1;
+        transition:
+            max-width 0.2s ease var(--kb-rail-delay),
+            opacity 0.12s ease var(--kb-rail-delay);
     }
 
     .side:is(:hover, :focus-within) .side-nav-badge {
@@ -347,21 +349,24 @@
         padding: 1px 7px;
         font-size: 10.5px;
         line-height: normal;
+        transition:
+            right 0.2s ease var(--kb-rail-delay),
+            min-width 0.2s ease var(--kb-rail-delay),
+            padding 0.2s ease var(--kb-rail-delay),
+            font-size 0.2s ease var(--kb-rail-delay);
     }
 
-    .side:is(:hover, :focus-within) .side-foot {
-        gap: 8px;
-    }
+    /* The foot's gap is deliberately *not* re-stated on hover: it holds 6px in
+       both states, so theme / language / logout never shift while the rail
+       opens (only their labels unmask). */
 
     .side:is(:hover, :focus-within) .menu-trigger>*:not(:first-child),
     .side:is(:hover, :focus-within) .side-logout>span {
         max-width: 160px;
         opacity: 1;
-    }
-
-    .side:is(:hover, :focus-within) .menu-trigger,
-    .side:is(:hover, :focus-within) .side-logout {
-        padding-left: 13px;
+        transition:
+            max-width 0.2s ease var(--kb-rail-delay),
+            opacity 0.12s ease var(--kb-rail-delay);
     }
 }
 
@@ -465,7 +470,7 @@
         margin-bottom: 8px;
     }
 
-    .side-nav-item {
+    .side .side-row {
         gap: 12px;
         padding: 13px 12px;
         border-radius: 12px;
@@ -521,6 +526,8 @@
     .side-nav-badge,
     .side-foot,
     .side-foot>*,
+    .side .side-row,
+    .side .side-row>*,
     .side .menu-trigger,
     .side .menu-trigger>*,
     .side-logout,

@@ -12,7 +12,7 @@ const themes = [
     { key: "dark", Icon: Moon },
 ] as const;
 
-export function ThemeToggle() {
+export function ThemeToggle({ className }: { className?: string }) {
     const { theme, setTheme } = useTheme();
     const t = useTranslations("theme");
     const [mounted, setMounted] = useState(false);
@@ -25,6 +25,7 @@ export function ThemeToggle() {
 
     return (
         <MenuButton
+            className={className}
             label={t("toggle")}
             icon={mounted ? active.Icon : Sun}
             value={mounted ? t(active.key) : "..."}

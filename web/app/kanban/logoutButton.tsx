@@ -10,7 +10,7 @@ export function LogoutButton({ label }: { label: string }) {
     }
 
     return (
-        <button type="button" className="side-logout" onClick={logoutClicked} title={label}>
+        <button type="button" className="side-row side-logout" onClick={logoutClicked} title={label}>
             <LogOut size={15} />
             <span>{label}</span>
         </button>

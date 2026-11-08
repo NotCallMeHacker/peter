@@ -24,7 +24,9 @@ export type SidebarGroup = {
 export type SidebarProps = {
     brand: { title: string; subtitle: string };
     groups: SidebarGroup[];
-    /** Extra controls for the foot row (logout, user menu…); theme and language are always included. */
+    /** Extra controls for the foot row (logout, user menu…); theme and language
+     *  are always included. Add `className="side-row"` to whatever you pass so
+     *  it picks up the shared row base the nav links use. */
     foot?: React.ReactNode;
     /** Locale shown by the language selector. Defaults to "en". */
     currentLocale?: string;
@@ -142,7 +144,7 @@ export function Sidebar({
                                 <a
                                     key={item.label}
                                     href={item.href}
-                                    className={"side-nav-item" + (item.active ? " side-nav-item--on" : "")}
+                                    className={"side-row side-nav-item" + (item.active ? " side-nav-item--on" : "")}
                                     aria-current={item.active ? "page" : undefined}
                                     title={item.label}
                                     onClick={() => setOpen(false)}
@@ -157,8 +159,8 @@ export function Sidebar({
                 </nav>
 
                 <div className="side-foot">
-                    <ThemeToggle />
-                    <LangSwitcher currentLocale={currentLocale} />
+                    <ThemeToggle className="side-row" />
+                    <LangSwitcher currentLocale={currentLocale} className="side-row" />
                     {foot}
                 </div>
             </aside>

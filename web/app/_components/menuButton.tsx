@@ -23,6 +23,10 @@ export type MenuButtonProps = {
     activeKey: string;
     onSelect: (key: string) => void;
     disabled?: boolean;
+    /** Extra class merged onto the trigger — lets a host dress it with a shared
+     *  row base (e.g. the sidebar's `side-row`) without the generic control
+     *  knowing anything about that host. */
+    className?: string;
 };
 
 export function MenuButton({
@@ -33,10 +37,15 @@ export function MenuButton({
     activeKey,
     onSelect,
     disabled,
+    className,
 }: MenuButtonProps) {
     return (
         <DropdownMenu.Root>
-            <DropdownMenu.Trigger className="menu-trigger" aria-label={label} disabled={disabled}>
+            <DropdownMenu.Trigger
+                className={className ? `menu-trigger ${className}` : "menu-trigger"}
+                aria-label={label}
+                disabled={disabled}
+            >
                 <Icon size={16} className="menu-trigger-icon" />
                 <span className="menu-trigger-value">{value}</span>
                 <ChevronDown size={14} className="menu-trigger-chevron" />
