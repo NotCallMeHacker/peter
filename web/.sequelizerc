@@ -1,5 +1,14 @@
 const path = require('path');
 
+// Enable TypeScript support for sequelize-cli (migrations, seeders, models)
+require('ts-node').register({
+  transpileOnly: true,
+  compilerOptions: {
+    module: 'commonjs',
+    moduleResolution: 'node',
+  },
+});
+
 module.exports = {
   'config':          path.resolve('db', 'config', 'config.js'),
   'models-path':     path.resolve('db', 'models'),

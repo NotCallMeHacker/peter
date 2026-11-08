@@ -4,7 +4,9 @@
         "cliRepo": "CLI Repo",
         "logout": "Logout",
         "changeLanguage": "Change language",
-        "somethingWentWrong": "Something went wrong while trying to get the session. Error - {error}"
+        "somethingWentWrong": "Something went wrong while trying to get the session. Error - {error}",
+        "openMenu": "Open menu",
+        "closeMenu": "Close menu"
     },
     "home": {
         "title": "example project",

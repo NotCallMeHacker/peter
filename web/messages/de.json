@@ -4,7 +4,9 @@
         "cliRepo": "CLI Repo",
         "logout": "Abmelden",
         "changeLanguage": "Sprache wechseln",
-        "somethingWentWrong": "Beim Abrufen der Sitzung ist ein Fehler aufgetreten. Fehler - {error}"
+        "somethingWentWrong": "Beim Abrufen der Sitzung ist ein Fehler aufgetreten. Fehler - {error}",
+        "openMenu": "Menü öffnen",
+        "closeMenu": "Menü schließen"
     },
     "home": {
         "title": "Beispielprojekt",

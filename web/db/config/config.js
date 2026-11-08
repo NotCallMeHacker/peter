@@ -8,9 +8,21 @@ try {
 }
 
 const dialect = process.env.DB_DIALECT || "postgres";
+const schema = process.env.DB_SCHEMA || "public";
 const base = {
   dialect,
   logging: process.env.DB_LOGGING === "true" ? console.log : false,
+};
+
+const buildDialectOptions = () => {
+  const opts = {};
+  if (process.env.DB_SSL === "true") {
+    opts.ssl = { require: true, rejectUnauthorized: false };
+  }
+  if (dialect === "postgres" && schema && schema !== "public") {
+    opts.prependSearchPath = true;
+  }
+  return Object.keys(opts).length ? opts : undefined;
 };
 
 // Build a single config object so we don't repeat vars in every env
@@ -22,10 +34,16 @@ const pgConfig = {
   username: process.env.DB_USER || "postgres",
   password: process.env.DB_PASSWORD || "postgres",
   // Sequelize-protocol-level SSL default: off for local dev
-  dialectOptions: process.env.DB_SSL === "true"
-    ? { ssl: { require: true, rejectUnauthorized: false } }
-    : undefined,
+  dialectOptions: buildDialectOptions(),
 };
+
+if (dialect === "postgres" && schema && schema !== "public") {
+  pgConfig.schema = schema;
+  pgConfig.define = { schema };
+  pgConfig.searchPath = schema;
+  pgConfig.migrationStorageTableSchema = schema;
+  pgConfig.seederStorageTableSchema = schema;
+}
 
 module.exports = {
   development: dialect === "sqlite"
