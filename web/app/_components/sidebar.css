@@ -365,6 +365,128 @@
     }
 }
 
+/* ── mobile: full-screen menu behind a hamburger ──────────────
+   Above 861px the sidebar is the icon rail (above). At 860px and below it
+   leaves the flow entirely — `position: fixed; inset: 0` — so the page root
+   reserves no room for it and the main column runs edge to edge; the panel
+   slides in over the whole viewport from the left. It is parked off-canvas
+   rather than `display: none`, so it animates, and `visibility: hidden`
+   keeps it out of the tab order and the accessibility tree while closed.
+   The trigger takes the top bar's empty left slot (`.kb-top` pushes its
+   icons right), positioned against the page root so it lines up with that
+   row and scrolls away with it. */
+.side-burger,
+.side-close {
+    display: none;
+}
+
+@media (max-width: 860px) {
+    .side-burger {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        z-index: 60;
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 12px;
+        color: var(--kb-muted, #646a8f);
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .side-burger:hover {
+        background: var(--kb-wash, #f4f5f9);
+        color: var(--kb-ink, #1f2340);
+    }
+
+    .side {
+        position: fixed;
+        inset: 0;
+        z-index: 90;
+        width: auto;
+        padding: 16px 16px 20px;
+        background: var(--kb-frame, #ffffff);
+        box-shadow: 18px 0 48px rgba(31, 35, 64, 0.18);
+        transform: translateX(-100%);
+        visibility: hidden;
+        /* visibility flips at once on the way in (so focus can land inside) and
+           only after the slide-out on the way back */
+        transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.28s;
+    }
+
+    .side--open {
+        transform: none;
+        visibility: visible;
+        transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0s;
+    }
+
+    .side-close {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 12px;
+        color: var(--kb-muted, #646a8f);
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .side-close:hover {
+        background: var(--kb-wash, #f4f5f9);
+        color: var(--kb-ink, #1f2340);
+    }
+
+    /* thumb-sized rows, full labels — this is a menu, not a rail */
+    .side-brand {
+        margin-bottom: 22px;
+    }
+
+    .side-nav {
+        gap: 20px;
+        scrollbar-width: none;
+    }
+
+    .side-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .side-nav-section {
+        margin-bottom: 8px;
+    }
+
+    .side-nav-item {
+        gap: 12px;
+        padding: 13px 12px;
+        border-radius: 12px;
+        font-size: 15px;
+    }
+
+    .side-nav-label {
+        /* no ellipsis: the panel is full width, so every label fits */
+        max-width: none;
+    }
+
+    .side-nav-badge {
+        right: 12px;
+    }
+
+    .side-foot {
+        gap: 10px;
+        padding-top: 18px;
+    }
+}
+
 /* The board is a light surface by design: the dropdown keeps the light palette
    inside .kb even when the app is in dark mode. The panel is portalled out of
    the sidebar, so these selectors are scoped to the page root instead of the
@@ -388,6 +510,8 @@
 @media (prefers-reduced-motion: reduce) {
 
     .side,
+    .side-burger,
+    .side-close,
     .side-brand,
     .side-brand>div,
     .side-nav,

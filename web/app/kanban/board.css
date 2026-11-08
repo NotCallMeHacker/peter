@@ -100,13 +100,27 @@
 #home-container:has(.kb) {
     background: var(--kb-page, #ffffff);
     padding: 0;
+    /* the route owns its height — the shell must not stretch it */
+    min-height: 0;
 }
 
-body:has(.kb)>.app-container>header {
-    display: none;
+/* The shell sizes itself to `100vh`, which on a phone is the *large* viewport:
+   taller than what is on screen whenever the URL bar is showing, so a few
+   phantom pixels of page scroll appear at the bottom. This route locks its own
+   height instead (`.kb { height: 100dvh }` below), so the wrapper only has to
+   be as tall as its content. */
+body:has(.kb)>.app-container {
+    min-height: 100vh;
+    min-height: 100dvh;
 }
 
-body:has(.kb) footer {
+/* Shell chrome this route does without: the demo header, the footer, and the
+   530×1 separator rule that AppShell renders *after* the page. That stray
+   pixel sat below `.kb` and stretched the document one pixel past the
+   viewport — the "one or two px" of scroll on every screen size. */
+body:has(.kb)>.app-container>header,
+body:has(.kb) footer,
+body:has(.kb) .separator-line {
     display: none;
 }
 
@@ -219,9 +233,16 @@ body:has(.kb) footer {
 }
 
 /* ── board row ────────────────────────────────────────────────── */
+/* Five equal tracks — stack + four columns — on one grid, 8px gutters. The
+   stack carries the same inset the columns give their cards (14px vertical,
+   8px horizontal), so the hero and chat panels are exactly as wide as a
+   column's card stack and every neighbouring pair sits 8 + 8 + 8 = 24px apart.
+   (Below 1180px the board drops back to flex so rows can wrap / slide.) */
 .kb-board {
-    display: flex;
-    gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+    gap: 8px;
     flex: 1;
     min-height: 0;
     overflow: hidden;
@@ -231,8 +252,8 @@ body:has(.kb) footer {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    width: 284px;
-    flex-shrink: 0;
+    padding: 14px 8px;
+    min-width: 0;
     min-height: 0;
     overflow: hidden;
 }
@@ -405,11 +426,24 @@ body:has(.kb) footer {
 
 /* ── columns ──────────────────────────────────────────────────── */
 .kb-cols {
-    display: flex;
-    gap: 14px;
+    display: grid;
+    /* spans four of the board's five tracks, so its own four 1fr tracks land
+       on the same pitch as the stack beside it */
+    grid-column: span 4;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+    gap: 8px;
     flex: 1;
     min-width: 0;
     min-height: 0;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.kb-cols::-webkit-scrollbar {
+    display: none;
 }
 
 .kb-col {
@@ -418,7 +452,7 @@ body:has(.kb) footer {
     flex: 1;
     min-width: 0;
     min-height: 0;
-    padding: 14px;
+    padding: 14px 8px;
     /* kanban4: columns are not wells — pills + cards float on the white ground */
     background: transparent;
     border: none;
@@ -464,6 +498,9 @@ body:has(.kb) footer {
     border-radius: 50%;
 }
 
+/* Card lists scroll, but never show a scrollbar: wheel / touch / keyboard all
+   still work, and the column keeps its full width (no 8px track eating into the
+   cards — hence no right-padding offset). */
 .kb-col-cards {
     display: flex;
     flex-direction: column;
@@ -471,19 +508,11 @@ body:has(.kb) footer {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    padding-right: 2px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--kb-line-hover) transparent;
+    scrollbar-width: none;
 }
 
 .kb-col-cards::-webkit-scrollbar {
-    width: 8px;
-}
-
-.kb-col-cards::-webkit-scrollbar-thumb {
-    background: var(--kb-line-hover);
-    border: 2px solid var(--kb-frame);
-    border-radius: 6px;
+    display: none;
 }
 
 .kb-col-empty {
@@ -670,11 +699,20 @@ body:has(.kb) footer {
         min-height: calc(100vh - 208px);
     }
 
+    /* back to flex: rows may wrap, and the column row can overflow its box
+       (min-width 260px items) — flex lets it scroll instead of overlapping */
     .kb-board {
+        display: flex;
         flex-wrap: wrap;
     }
 
+    .kb-cols {
+        display: flex;
+        flex: 1;
+    }
+
     .kb-stack {
+        flex: 0 0 auto;
         width: 100%;
         flex-direction: row;
         flex-wrap: wrap;
@@ -696,19 +734,20 @@ body:has(.kb) footer {
         overflow: visible;
     }
 
-    .kb-cols {
-        flex-wrap: wrap;
-        width: 100%;
-    }
-
     .kb-col {
         min-width: 260px;
+        flex-shrink: 0;
     }
 }
 
 @media (max-width: 860px) {
+    /* Phone layout is viewport-locked again: the root is exactly the dynamic
+       viewport, so the page itself has nothing to scroll. */
     .kb {
         flex-direction: column;
+        height: 100vh;
+        height: 100dvh;
+        min-height: 0;
     }
 
     .kb-main {
@@ -723,14 +762,99 @@ body:has(.kb) footer {
         flex-wrap: wrap;
     }
 
-    .kb-col {
-        min-width: 100%;
+    /* Only the rail may give way: top bar, title and note keep their natural
+       height whatever the locale makes of them. */
+    .kb-main>* {
+        flex-shrink: 0;
     }
 
+    /* One side-scrolling rail: the first slide carries the "Needs you" hero
+       over the agent chat (below each other), then the columns — all bleeding
+       past the main column's gutter so each slide centers on the viewport.
+       That is DOM order only: on load the rail's scroll offset is parked on
+       the first kanban column (useStartOnFirstColumn), so a refresh lands on
+       Backlog rather than on the stack. */
+    .kb-board {
+        display: flex;
+        /* flex-fills the space the chrome above and below leaves over — a fixed
+           `100dvh - 176px` assumed a one-line title and note and leaked a few
+           pixels of page scroll as soon as either wrapped. Columns stretch to
+           the result and scroll their card lists inside their own box. */
+        flex: 1 1 auto;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 8px;
+        width: calc(100% + 28px);
+        margin-left: -14px;
+        margin-right: -14px;
+        padding: 0 28px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-behavior: smooth;
+        scroll-snap-type: x mandatory;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        /* Slide width: the viewport minus 96px. Centered snaps then leave 48px
+           of rail on each side, and after the 8px inter-slide gap ~40px of the
+           neighbouring slide stays on screen — a permanent sliver that says
+           "there is more this way". The 260px floor keeps tiny phones from
+           squeezing the cards (the peek narrows to ~24px at 320px). */
+        --kb-slide: max(260px, calc(100vw - 96px));
+    }
+
+    .kb-board::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* first slide: hero above chat, panel-wide */
     .kb-stack {
+        flex: 0 0 auto;
         flex-direction: column;
+        flex-wrap: nowrap;
+        gap: 14px;
+        width: var(--kb-slide);
+        min-width: 0;
+        overflow: visible;
+        scroll-snap-align: center;
+    }
+
+    .hero,
+    .chat {
+        flex: 0 0 auto;
+        width: auto;
+        min-width: 0;
+        scroll-snap-align: none;
+    }
+
+    .chat {
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+
+    .chat-msgs {
+        min-height: 0;
+        overflow-y: auto;
+    }
+
+    .kb-cols {
+        display: flex;
+        flex: 0 0 auto;
+        width: auto;
+        margin: 0;
+        padding: 0;
+        overflow: visible;
+        scroll-snap-type: none;
+    }
+
+    .kb-col {
+        flex: 0 0 auto;
+        width: var(--kb-slide);
+        min-width: var(--kb-slide);
+        scroll-snap-align: center;
     }
 }
+
 
 @media (prefers-reduced-motion: reduce) {
     .card {

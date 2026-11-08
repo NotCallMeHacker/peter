@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { useTranslations } from "next-intl";
 import {
     LayoutDashboard,
@@ -17,6 +18,7 @@ import {
 import { Sidebar, type SidebarGroup } from "../_components/sidebar";
 import { LogoutButton } from "./logoutButton";
 import { project, columns, chat, type Column, type Issue } from "./data";
+import { useStartOnFirstColumn } from "./railStart";
 
 const columnLabelKey = {
     backlog: "columns.backlog",
@@ -150,6 +152,10 @@ export default function KanbanPage() {
     const t = useTranslations("kanban");
     const tCommon = useTranslations("common");
 
+    // opening / refreshing the mobile rail starts on the first kanban column
+    const railRef = useRef<HTMLDivElement>(null);
+    useStartOnFirstColumn(railRef);
+
     const groups: SidebarGroup[] = [
         {
             section: t("nav.overview"),
@@ -183,6 +189,8 @@ export default function KanbanPage() {
                 brand={{ title: "peter", subtitle: t("brandSub") }}
                 groups={groups}
                 foot={<LogoutButton label={tCommon("logout")} />}
+                menuLabel={tCommon("openMenu")}
+                closeLabel={tCommon("closeMenu")}
             />
 
             <div className="kb-main">
@@ -195,7 +203,7 @@ export default function KanbanPage() {
                     </div>
                 </div>
 
-                <div className="kb-board">
+                <div className="kb-board" ref={railRef}>
                     <div className="kb-stack">
                         <HeroPanel />
                         <AgentChat />
