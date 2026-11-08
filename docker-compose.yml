@@ -54,6 +54,7 @@ services:
       DB_USER: ${DB_USER:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
       DB_LOGGING: ${DB_LOGGING:-false}
+      DB_SCHEMA: ${DB_SCHEMA:-app}
     healthcheck:
       test:
         [

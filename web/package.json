@@ -4,8 +4,9 @@
     "private": true,
     "scripts": {
         "dev": "npm run stack:up && next dev",
-        "db:migrate": "sequelize-cli db:migrate",
-        "db:migrate:undo": "sequelize-cli db:migrate:undo",
+        "db:migrate": "npx sequelize-cli db:migrate",
+        "db:migrate:undo": "npx sequelize-cli db:migrate:undo",
+        "db:schema:move": "node db/scripts/move-to-schema.js",
         "stack:up": "docker compose -f ../docker-compose.yml stop web && docker compose -f ../docker-compose.yml -f ../docker-compose.no-web.yml up -d",
         "stack:down": "docker compose -f ../docker-compose.yml down",
         "build": "next build",
@@ -37,6 +38,7 @@
         "dotenv": "^16.4.5",
         "eslint": "^8",
         "eslint-config-next": "13.5.4",
-        "sequelize-cli": "^6.6.5"
+        "sequelize-cli": "^6.6.5",
+        "ts-node": "^10.9.2"
     }
 }

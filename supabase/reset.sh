@@ -26,7 +26,7 @@ if [ "$1" = "-y" ]; then
 fi
 
 echo ""
-echo "*** WARNING: This will remove all containers and container data, and optionally reset .env ***"
+echo "*** WARNING: This will remove all containers and container data (.env is left untouched) ***"
 echo ""
 
 confirm
@@ -58,22 +58,6 @@ done
 mkdir -p ./volumes/storage
 touch ./volumes/storage/.gitkeep
 
-echo "===> Resetting .env file (will save backup to .env.old)..."
-confirm
-if [ -f ".env" ] || [ -L ".env" ]; then
-    echo "Renaming existing .env file to .env.old"
-    mv .env .env.old
-else
-    echo "No .env file found."
-fi
-
-if [ -f ".env.example" ]; then
-    echo "===> Copying .env.example to .env"
-    cp .env.example .env
-else
-    echo "No .env.example found, can't restore .env to default values."
-fi
-
-echo "Cleanup complete!"
+echo "Cleanup complete! (note: .env was NOT modified — edit it by hand if you want fresh secrets)"
 echo "Re-run 'docker compose pull' to update images."
 echo ""
