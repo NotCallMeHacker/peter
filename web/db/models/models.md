@@ -4,11 +4,12 @@
 represents a user of the application
 table: supertokens.all_auth_recipe_users  
 Managed by SuperTokens; no local fields.
+- id: `user_id` varchar(36) (uuid) — this is the value every local user reference stores (`group.ownerId`, `comment.userId`). It has no local table, so those references are logical: no physical FK can point at the SuperTokens primary key (app_id, tenant_id, user_id).
 
 ## group
 represents a group of users (placeholder for future use; currently maps 1:1 to a user)
 - id: PK, integer NOT NULL
-- ownerId: FK → user.id, integer NOT NULL // Unique (1..1)
+- ownerId: varchar(36) NOT NULL // owner's user id (user.id above); Unique (1..1)
 - name: varchar(255) NOT NULL
 - deleted: boolean NOT NULL default false // if true the group is deleted and cannot be accessed
 - createdAt: datetime NOT NULL
@@ -162,7 +163,7 @@ represents a project-wide audit log entry covering project, column, label, issue
 represents a comment made on an issue
 - id: PK, integer NOT NULL
 - issueId: FK → issue.id, integer NOT NULL ON DELETE CASCADE
-- userId: FK → user.id, integer NOT NULL ON DELETE RESTRICT
+- userId: varchar(36) NOT NULL // commenting user's id (user.id above); treated as ON DELETE RESTRICT — a comment outlives its author only if the id is kept
 - content: text NOT NULL // markdown-supported comment content
 - deleted: boolean NOT NULL default false // if true the comment is deleted and its content should not be displayed
 - createdAt: datetime NOT NULL
@@ -229,3 +230,21 @@ issue 1..* agentTask
 All IDs except issue IDs will be cyphered for external/public use. Internally they should all be sequential integers. Public IDs will be generated using a cypher function that takes the internal ID and returns a cyphered ID. If the internal ID is smaller than 10,000, it is 0-padded to 5 digits **before** cyphering. This is done in the application layer, not the database layer.
 
 Datetime is managed/enforced by sequelize and the database. All datetime fields are stored in UTC and should be treated as UTC in the application layer. The application layer should convert to local timezones for display purposes.
+# Row Level Security
+
+Every table in `app` runs with RLS **on** (migration `20261108000002-row-level-security`, applied with `npm run db:migrate`). The web app reads through PostgREST as the `anon` role and mints a short-lived token per request whose `sub` is the session user, so the policies resolve the caller with `app.current_user_id()` (`request.jwt.claims ->> 'sub'`):
+
+| table | a row is visible when |
+| --- | --- |
+| `Groups` | `ownerId` is the caller |
+| `Projects` | its group belongs to the caller |
+| `Columns`, `Labels`, `Logs` | its project belongs to the caller (`app.owns_project`) |
+| `Issues` | its column's project belongs to the caller |
+| `Comments`, `AgentTasks`, `IssueLabels` | its issue is visible (`app.owns_issue`) |
+| `SequelizeMeta` | never — RLS on, no policy |
+
+- Policies are `FOR SELECT` only, and `anon`/`authenticated` hold `SELECT` grants and nothing else, so the API roles cannot write at all.
+- `FORCE ROW LEVEL SECURITY` is deliberately off: the table owner (`postgres` — used by `db:migrate`, `.agents/dbq.sh` and the sample seed) and BYPASSRLS roles (`service_role`, `supabase_admin`) keep working unchanged. Never read user data with `service_role`: it bypasses every policy.
+- No `sub` in the token means no rows — a bare call to the API with the static anon key returns nothing, by design.
+- **Adding a table to `app`?** Enable RLS and add its policy in the same migration (the statements are idempotent, so re-running `20261108000002` also fixes a table that was created without them). An enabled table with no policy is readable by nobody but the owner.
+- The app-layer filter in `app/_lib/kanbanRepo.ts` stays: it is what turns a foreign project into a 404 instead of an empty board. RLS is the backstop for queries that forget it.

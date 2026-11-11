@@ -28,7 +28,6 @@
     },
     "kanban": {
         "title": "Kanban-Board",
-        "subtitle": "peter / core · wt/agent-1 · wt/agent-2 · wt/main",
         "brandSub": "für Teams",
         "search": "Issues, Agenten, Worktrees durchsuchen…",
         "notifications": "Benachrichtigungen",
@@ -38,7 +37,13 @@
         "activity": "Lauf-Aktivität — 24 Std.",
         "agentChat": "Agenten-Chat",
         "messagePlaceholder": "Nachricht an die Agenten…",
-        "syntheticNote": "Demo-Daten — Issues, Läufe und Worktrees sind synthetisch, bis das Agenten-Backend kommt.",
+        "chatEmpty": "Noch keine Agenten-Notizen oder Kommentare auf diesem Board.",
+        "projectsHeading": "Projekte",
+        "projectsIntro": "Jedes Projekt hat ein eigenes Board.",
+        "projectsEmpty": "Noch keine Projekte — erstelle eines, um sein Board zu öffnen.",
+        "columnCount": "{count, plural, one {# Spalte} other {# Spalten}}",
+        "issueCount": "{count, plural, one {# Issue} other {# Issues}}",
+        "archived": "archiviert",
         "nav": {
             "overview": "Übersicht",
             "dashboard": "Dashboard",

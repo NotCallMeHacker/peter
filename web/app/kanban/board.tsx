@@ -17,33 +17,35 @@ import {
 } from "lucide-react";
 import { Sidebar, type SidebarGroup } from "../_components/sidebar";
 import { LogoutButton } from "./logoutButton";
-import { project, columns, chat, type Column, type Issue } from "./data";
+import {
+    columnLabelKey,
+    type Board,
+    type ChatMessage,
+    type Column,
+    type HeroProject,
+    type Issue,
+} from "./data";
 import { useStartOnFirstColumn } from "./railStart";
-
-const columnLabelKey = {
-    backlog: "columns.backlog",
-    ready: "columns.ready",
-    progress: "columns.progress",
-    review: "columns.review",
-} as const;
 
 function IssueCard({ issue }: { issue: Issue }) {
     const t = useTranslations("kanban");
-    const typeName = t(`type.${issue.type}`);
+    const typeName = issue.type ? t(`type.${issue.type}`) : null;
 
     return (
         <article className={"card" + (issue.flagged ? " card--flagged" : "")}>
             <div className="card-id">{issue.id}</div>
             <h3 className="card-title">{issue.title}</h3>
             <div className="card-meta">
-                <span className={"tag tag--" + issue.type}>{typeName}</span>
+                {typeName && <span className={"tag tag--" + issue.type}>{typeName}</span>}
                 {issue.run && (
                     <span className={"tag tag--run tag--run-" + issue.run.state}>{issue.run.label}</span>
                 )}
                 <span className="card-date">{issue.date}</span>
-                <span className={"avatar avatar--" + issue.avatarTone} aria-hidden="true">
-                    {issue.avatar}
-                </span>
+                {issue.avatar && (
+                    <span className={"avatar avatar--" + issue.avatarTone} aria-hidden="true">
+                        {issue.avatar}
+                    </span>
+                )}
             </div>
             {issue.run?.progress !== undefined && (
                 <div
@@ -63,8 +65,9 @@ function IssueCard({ issue }: { issue: Issue }) {
     );
 }
 
-function BoardColumn({ column, label }: { column: Column; label: string }) {
+function BoardColumn({ column }: { column: Column }) {
     const t = useTranslations("kanban");
+    const label = column.label || t(columnLabelKey[column.key]);
 
     return (
         <section className="kb-col" aria-label={label}>
@@ -101,7 +104,7 @@ function TopBar({ searchLabel, notificationsLabel }: { searchLabel: string; noti
     );
 }
 
-function HeroPanel() {
+function HeroPanel({ project }: { project: HeroProject }) {
     const t = useTranslations("kanban");
 
     return (
@@ -109,31 +112,34 @@ function HeroPanel() {
             <p className="hero-cap">{t("needsYou")}</p>
             <p className="hero-n">{project.failedRuns}</p>
             <p className="hero-lbl">{t("failedRuns", { count: project.needYou })}</p>
-            <div className="hero-wt">
-                <p className="hero-wthead">{t("worktrees")}</p>
-                {project.worktrees.map((wt) => (
-                    <p key={wt.name}>
-                        <b>{wt.name}</b> · {wt.branch}
-                    </p>
-                ))}
-            </div>
+            {project.worktrees.length > 0 && (
+                <div className="hero-wt">
+                    <p className="hero-wthead">{t("worktrees")}</p>
+                    {project.worktrees.map((wt) => (
+                        <p key={wt.name}>
+                            <b>{wt.name}</b> · {wt.branch}
+                        </p>
+                    ))}
+                </div>
+            )}
             <div className="hero-plot" aria-label={t("activity")}>
                 {project.activity.map((bar, i) => (
-                    <i key={i} className={bar.failed ? "state-failed" : undefined} style={{ height: `${bar.h}%` }} />
+                    <i key={i} className={bar.failed ? "is-failed" : undefined} style={{ height: `${bar.h}%` }} />
                 ))}
             </div>
         </aside>
     );
 }
 
-function AgentChat() {
+function AgentChat({ messages }: { messages: ChatMessage[] }) {
     const t = useTranslations("kanban");
 
     return (
         <aside className="chat" aria-label={t("agentChat")}>
             <h2 className="chat-head">{t("agentChat")}</h2>
             <div className="chat-msgs">
-                {chat.map((msg, i) => (
+                {messages.length === 0 && <p className="kb-col-empty">{t("chatEmpty")}</p>}
+                {messages.map((msg, i) => (
                     <div key={i} className={"msg" + (msg.mine ? " msg--me" : "")}>
                         <span className="msg-who">{msg.meta}</span>
                         <p>{msg.text}</p>
@@ -148,9 +154,13 @@ function AgentChat() {
     );
 }
 
-export default function KanbanPage() {
+export default function KanbanPage({ board }: { board: Board }) {
     const t = useTranslations("kanban");
     const tCommon = useTranslations("common");
+
+    const { project } = board;
+    // title subline: project name followed by its live worktrees, as designed
+    const subline = [project.name, ...project.worktrees.map((wt) => wt.name)].join(" · ");
 
     // opening / refreshing the mobile rail starts on the first kanban column
     const railRef = useRef<HTMLDivElement>(null);
@@ -160,7 +170,7 @@ export default function KanbanPage() {
         {
             section: t("nav.overview"),
             items: [
-                { icon: LayoutDashboard, label: t("nav.dashboard"), href: "/kanban" },
+                { icon: LayoutDashboard, label: t("nav.dashboard"), href: "/dashboard" },
                 { icon: FolderKanban, label: t("nav.projects"), href: "/kanban" },
                 { icon: Users, label: t("nav.team"), href: "/kanban" },
             ],
@@ -168,7 +178,7 @@ export default function KanbanPage() {
         {
             section: t("nav.work"),
             items: [
-                { icon: FolderKanban, label: t("nav.board"), href: "/kanban", active: true },
+                { icon: FolderKanban, label: t("nav.board"), href: `/kanban/${board.publicId}`, active: true },
                 { icon: Bot, label: t("nav.agents"), href: "/kanban", badge: project.needYou },
                 { icon: FileText, label: t("nav.docs"), href: "/kanban" },
                 { icon: GitBranch, label: t("nav.git"), href: "/kanban" },
@@ -199,24 +209,22 @@ export default function KanbanPage() {
                 <div className="kb-title">
                     <div>
                         <h1>{t("title")}</h1>
-                        <p className="kb-title-sub">{t("subtitle")}</p>
+                        <p className="kb-title-sub">{subline}</p>
                     </div>
                 </div>
 
                 <div className="kb-board" ref={railRef}>
                     <div className="kb-stack">
-                        <HeroPanel />
-                        <AgentChat />
+                        <HeroPanel project={project} />
+                        <AgentChat messages={board.chat} />
                     </div>
 
                     <div className="kb-cols">
-                        {columns.map((column) => (
-                            <BoardColumn key={column.key} column={column} label={t(columnLabelKey[column.key])} />
+                        {board.columns.map((column) => (
+                            <BoardColumn key={column.key + column.label} column={column} />
                         ))}
                     </div>
                 </div>
-
-                <p className="kb-note">{t("syntheticNote")}</p>
             </div>
         </div>
     );

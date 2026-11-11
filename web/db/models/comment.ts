@@ -4,7 +4,8 @@ import { Model, DataTypes, Sequelize } from 'sequelize';
 export interface CommentAttributes {
     id: number;
     issueId: number;
-    userId: number;
+    /** User id from supertokens.all_auth_recipe_users.user_id (uuid). */
+    userId: string;
     content: string;
     deleted: boolean;
 }
@@ -18,7 +19,7 @@ const commentFactory = (sequelize: Sequelize, DT: typeof DataTypes) => {
         implements CommentAttributes {
         public id!: number;
         public issueId!: number;
-        public userId!: number;
+        public userId!: string;
         public content!: string;
         public deleted!: boolean;
 
@@ -42,7 +43,7 @@ const commentFactory = (sequelize: Sequelize, DT: typeof DataTypes) => {
                 allowNull: false,
             },
             userId: {
-                type: DT.INTEGER,
+                type: DT.STRING(36),
                 allowNull: false,
             },
             content: {

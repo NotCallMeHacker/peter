@@ -3,7 +3,8 @@ import { Model, DataTypes, Sequelize } from 'sequelize';
 
 export interface GroupAttributes {
     id: number;
-    ownerId: number;
+    /** User id from supertokens.all_auth_recipe_users.user_id (uuid). */
+    ownerId: string;
     name: string;
     deleted: boolean;
 }
@@ -16,7 +17,7 @@ const groupFactory = (sequelize: Sequelize, DT: typeof DataTypes) => {
         extends Model<GroupAttributes, GroupCreationAttributes>
         implements GroupAttributes {
         public id!: number;
-        public ownerId!: number;
+        public ownerId!: string;
         public name!: string;
         public deleted!: boolean;
 
@@ -36,7 +37,7 @@ const groupFactory = (sequelize: Sequelize, DT: typeof DataTypes) => {
                 primaryKey: true,
             },
             ownerId: {
-                type: DT.INTEGER,
+                type: DT.STRING(36),
                 allowNull: false,
             },
             name: {
