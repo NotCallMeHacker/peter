@@ -1,43 +1,17 @@
 /* Project picker at /kanban — the shell's white card, in the board's voice.
-   The `.kb` tokens live on the board route only, so the world values used here
-   are declared locally (same hexes as board.css). */
-
-/* Self-hosted faces — bundled from @fontsource, never fetched at runtime. */
-@import "@fontsource/plus-jakarta-sans/400.css";
-@import "@fontsource/plus-jakarta-sans/600.css";
-@import "@fontsource/plus-jakarta-sans/700.css";
-@import "@fontsource/plus-jakarta-sans/800.css";
-@import "@fontsource/ibm-plex-mono/400.css";
-@import "@fontsource/ibm-plex-mono/500.css";
+   World tokens and faces come from `app/globals.css`; the heading block is the
+   shared PageHeader. */
 
 .projects {
     padding: 40px 40px 44px;
     text-align: left;
-    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-
-.projects h1 {
-    margin: 0;
-    font-size: 30px;
-    font-weight: 800;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    color: #1f2340;
-    text-wrap: balance;
-}
-
-.projects-intro {
-    margin: 6px 0 26px;
-    font-size: 14.5px;
-    line-height: 1.5;
-    color: #454c72;
 }
 
 .project-list {
     margin: 0;
     padding: 0;
     list-style: none;
-    border-top: 1px solid #e8eaf0;
+    border-top: 1px solid var(--kb-line);
 }
 
 .project-row {
@@ -45,18 +19,18 @@
     align-items: center;
     gap: 14px;
     padding: 15px 10px;
-    border-bottom: 1px solid #e8eaf0;
+    border-bottom: 1px solid var(--kb-line);
     color: inherit;
     text-decoration: none;
     transition: background-color 0.15s ease;
 }
 
 .project-row:hover {
-    background-color: #f6f7f9;
+    background-color: var(--kb-col-bg);
 }
 
 .project-row:focus-visible {
-    outline: 2px solid #3b66e8;
+    outline: 2px solid var(--kb-blue);
     outline-offset: -2px;
     border-radius: 6px;
 }
@@ -68,7 +42,7 @@
     width: 40px;
     height: 40px;
     border-radius: 11px;
-    background: linear-gradient(160deg, #343a87, #2b2f6b);
+    background: linear-gradient(160deg, var(--kb-navy-1), var(--kb-navy-2));
     color: #ffffff;
     font-size: 15px;
     font-weight: 700;
@@ -90,16 +64,16 @@
     font-size: 15px;
     font-weight: 700;
     line-height: 1.35;
-    color: #1f2340;
+    color: var(--kb-ink);
     text-wrap: pretty;
 }
 
 .project-archived {
     padding: 2px 8px;
     border-radius: 7px;
-    background-color: #f1f3f9;
-    color: #5a648f;
-    font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    background-color: var(--kb-tag-chore-bg);
+    color: var(--kb-tag-chore-ink);
+    font-family: var(--kb-mono);
     font-size: 10.5px;
     font-weight: 500;
     letter-spacing: 0.05em;
@@ -110,37 +84,22 @@
     overflow: hidden;
     font-size: 13px;
     line-height: 1.5;
-    color: #454c72;
+    color: var(--kb-muted);
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .project-meta {
     flex-shrink: 0;
-    font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    font-family: var(--kb-mono);
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.04em;
-    color: #4e5580;
+    color: var(--kb-faint);
     white-space: nowrap;
 }
 
-.projects-empty {
-    margin: 0;
-    padding: 18px 14px;
-    border: 1.5px dashed #eceef2;
-    border-radius: 14px;
-    font-size: 12.5px;
-    font-weight: 500;
-    text-align: center;
-    color: #454c72;
-}
-
 @media (max-width: 560px) {
-    .projects {
-        padding: 28px 20px 32px;
-    }
-
     /* counts wrap under the name instead of crowding it */
     .project-meta {
         flex-basis: 100%;

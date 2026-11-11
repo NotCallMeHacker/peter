@@ -24,12 +24,12 @@ export type SidebarGroup = {
 export type SidebarProps = {
     brand: { title: string; subtitle: string };
     groups: SidebarGroup[];
+    /** Locale shown by the language selector. Defaults to "en". */
+    currentLocale?: string;
     /** Extra controls for the foot row (logout, user menu…); theme and language
      *  are always included. Add `className="side-row"` to whatever you pass so
      *  it picks up the shared row base the nav links use. */
     foot?: React.ReactNode;
-    /** Locale shown by the language selector. Defaults to "en". */
-    currentLocale?: string;
     /** aria-label for the navigation landmark. Defaults to "Primary". */
     ariaLabel?: string;
     /** aria-label for the mobile hamburger trigger. */

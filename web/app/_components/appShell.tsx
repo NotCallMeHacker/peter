@@ -1,56 +1,30 @@
-import Link from "next/link";
-import { ThemeToggle } from "./themeToggle";
-import { LangSwitcher } from "./langSwitcher";
-import { createServerTranslator, type Locale } from "../_lib/i18n";
+import { headers } from "next/headers";
+import { ShellSidebar } from "./shellSidebar";
+import type { Locale } from "../_lib/i18n";
 
 /**
- * Top bar + page frame for every route. The chrome is brand-neutral now that
- * SuperTokens is gone: the wordmark points home, and the nav keeps the docs
- * links (repo + Next.js docs) with theme and language toggles.
+ * Page frame for every route — no header: the shell is the sidebar rail
+ * riding the blue field, the scrolling page column under it and the footer
+ * stamp at the end. (The wordmark lives in the rail's brand block.)
+ *
+ * The path arrives tagged by `proxy.ts`, so this server component can shape
+ * the chrome per route: `/auth` drops the sidebar — the sign-in card is a
+ * single focused surface and carries its own theme/locale controls.
  */
-export function AppShell({ children, locale }: { children: React.ReactNode; locale: Locale }) {
-    const { t } = createServerTranslator(locale, "common");
+export async function AppShell({ children, locale }: { children: React.ReactNode; locale: Locale }) {
+    const pathname = (await headers()).get("x-pathname") ?? "/";
+
+    const bare = pathname === "/auth" || pathname.startsWith("/auth/");
 
     return (
         <div className="App app-container">
-            <header>
-                <nav className="header-container">
-                    <Link href="/" className="brand-mark" aria-label="peter">
-                        peter
-                    </Link>
-                    <ul className="header-container-right">
-                        <li>
-                            <a
-                                href="https://nextjs.org/docs"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                {t("docs")}
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="https://github.com/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                {t("cliRepo")}
-                            </a>
-                        </li>
-                        <li>
-                            <ThemeToggle />
-                        </li>
-                        <li>
-                            <LangSwitcher currentLocale={locale} />
-                        </li>
-                    </ul>
-                </nav>
-            </header>
+            {/* No pathname prop: the rail reads the live path client-side
+                (see ShellSidebar) — this header only shapes which chrome
+                exists, and survives client-side navigations. */}
+            {!bare && <ShellSidebar currentLocale={locale} />}
+
             <div className="fill" id="home-container">
                 {children}
-                <footer>
-                    Built with ❤️ · Supabase Auth · Next.js
-                </footer>
             </div>
         </div>
     );

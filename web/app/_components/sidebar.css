@@ -228,17 +228,57 @@
 
 /* ── resting rail + hover overlay ───────────────────────────────
    The sidebar rests as a 76px icon rail; hovering (or focusing
-   inside) it widens it to 236px OVER the board — position:relative
-   + z-index keep the board from reflowing, so nothing shifts.
+   inside) it widens it to 236px OVER the page — position:absolute
+   + z-index keep the page from reflowing, so nothing shifts.
    Only animatable properties change (opacity / max-width /
    min-height / padding / width): no display or flex-direction
    flips, which would snap at t=0. Gated to ≥861px so the
    horizontal mobile sidebar is untouched. */
 @media (min-width: 861px) {
 
-    /* rail space is reserved by the page root (`.kb { padding-left: 76px }`,
-       in the board stylesheet), not by the sidebar: it is out of flow, so
-       widening it never reflows the main column. */
+    /* Rail space is reserved by the shell's root (`.app-container {
+       padding-left: 76px }`, in globals), not by the sidebar: it is out of
+       flow, so widening it never reflows the page. The tint/frost states below
+       are the sidebar's own on every route — the board used to override them,
+       which is why its rail animated differently from the rest of the app. */
+    .side {
+        /* The tint is a *colour*, not a gradient: Chrome will not run a
+           transition on `background-image` between two gradients — it snaps the
+           value instead and the declared delay is ignored. Colours interpolate
+           everywhere; the 150° diagonal this replaces was a ~4-unit difference
+           across a 76px rail — invisible. */
+        background-color: rgba(242, 246, 254, 0);
+        -webkit-backdrop-filter: blur(0px);
+        backdrop-filter: blur(0px);
+        /* closing: no hold — the sheet clears as the rail collapses */
+        transition:
+            background-color 0.16s ease,
+            backdrop-filter 0.12s ease,
+            -webkit-backdrop-filter 0.12s ease,
+            width 0.2s ease,
+            padding 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    /* opening: one shared dwell (`--kb-rail-delay`, on `.side`) before anything
+       moves, so a mouse flick across the rail never flashes tint or section
+       text; then frost and tint start together — they may never get *different*
+       delays, or the blur leads the sheet and blurs text with nothing over it.
+       A transition takes its timing from the *destination* state, so each side
+       declares its own list (see `.side` above for the close direction). */
+    .side:is(:hover, :focus-within) {
+        background-color: rgba(242, 246, 254, 0.84);
+        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(16px);
+        transition:
+            background-color 0.2s ease var(--kb-rail-delay, 0.15s),
+            backdrop-filter 0.12s ease var(--kb-rail-delay, 0.15s),
+            -webkit-backdrop-filter 0.12s ease var(--kb-rail-delay, 0.15s),
+            width 0.2s ease var(--kb-rail-delay, 0.15s),
+            padding 0.2s ease var(--kb-rail-delay, 0.15s),
+            box-shadow 0.2s ease var(--kb-rail-delay, 0.15s);
+    }
+
     .side {
         position: absolute;
         top: 0;
@@ -377,15 +417,21 @@
    slides in over the whole viewport from the left. It is parked off-canvas
    rather than `display: none`, so it animates, and `visibility: hidden`
    keeps it out of the tab order and the accessibility tree while closed.
-   The trigger takes the top bar's empty left slot (`.kb-top` pushes its
-   icons right), positioned against the page root so it lines up with that
-   row and scrolls away with it. */
+   The trigger sits against the page root's top-left corner (no rail to
+   reserve at this width) and scrolls away with the page. */
 .side-burger,
 .side-close {
     display: none;
 }
 
 @media (max-width: 860px) {
+    /* The full-screen menu goes frosted too: the solid `--kb-frame` would
+       hide the blur behind it. 0.88 white keeps the worst case (the navy hero
+       smeared behind it) above 6:1 for every ink step. */
+    .side {
+        background: rgba(255, 255, 255, 0.88);
+    }
+
     .side-burger {
         position: absolute;
         top: 14px;

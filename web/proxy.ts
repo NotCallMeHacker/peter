@@ -42,13 +42,26 @@ function redirect(request: NextRequest): NextResponse {
     return NextResponse.redirect(new URL(`/auth${params.size ? `?${params}` : ""}`, request.url));
 }
 
+/**
+ * Forward with the request path tagged on — the root layout reads it to decide
+ * which chrome the route carries (the sign-in card renders without the
+ * sidebar). Cookies still cannot be set from a server component, so the
+ * proxy stays the one place that both refreshes and forwards.
+ */
+function pass(request: NextRequest): NextResponse {
+    const response = NextResponse.next();
+    response.headers.set("x-pathname", request.nextUrl.pathname);
+    return response;
+}
+
 export default async function proxy(request: NextRequest): Promise<NextResponse> {
     let access = request.cookies.get(ACCESS_COOKIE)?.value;
     const refresh = request.cookies.get(REFRESH_COOKIE)?.value;
 
-    // No session at all: public pages pass, gated ones go to /auth.
+    // No session at all: public pages pass (tagged, so the root layout can
+    // shape its chrome), gated ones go to /auth.
     if (!access) {
-        if (!isGated(request.nextUrl.pathname)) return NextResponse.next();
+        if (!isGated(request.nextUrl.pathname)) return pass(request);
         return redirect(request);
     }
 
@@ -60,7 +73,7 @@ export default async function proxy(request: NextRequest): Promise<NextResponse>
         try {
             const session = await refreshSession(refresh);
             access = session.access_token;
-            const response = NextResponse.next();
+            const response = pass(request);
             const base = cookieBase();
             response.cookies.set(ACCESS_COOKIE, session.access_token, { ...base, maxAge: session.expires_in });
             response.cookies.set(REFRESH_COOKIE, session.refresh_token, { ...base, maxAge: REFRESH_MAX_AGE });
@@ -82,7 +95,7 @@ export default async function proxy(request: NextRequest): Promise<NextResponse>
         return response;
     }
 
-    return NextResponse.next();
+    return pass(request);
 }
 
 export const config = {

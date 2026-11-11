@@ -1,7 +1,5 @@
 {
     "common": {
-        "docs": "Dokumentation",
-        "cliRepo": "CLI Repo",
         "logout": "Abmelden",
         "changeLanguage": "Sprache wechseln",
         "somethingWentWrong": "Beim Abrufen der Sitzung ist ein Fehler aufgetreten. Fehler - {error}",
@@ -16,6 +14,7 @@
         "signUpLogin": "Registrieren / Anmelden"
     },
     "dashboard": {
+        "title": "Dashboard",
         "loginSuccessful": "Anmeldung erfolgreich",
         "yourUserId": "Deine Benutzer-ID:",
         "callAPI": "API aufrufen"
@@ -36,6 +35,12 @@
         "continueWith": "Weiter mit",
         "confirmationSent": "Prüfe dein Postfach, um deine E-Mail-Adresse zu bestätigen, und melde dich dann an.",
         "networkError": "Server nicht erreichbar — bitte erneut versuchen."
+    },
+    "settings": {
+        "title": "Einstellungen",
+        "intro": "Design und Sprache für diesen Browser.",
+        "theme": "Design",
+        "language": "Sprache"
     },
     "theme": {
         "toggle": "Thema wechseln",
@@ -65,14 +70,7 @@
             "overview": "Übersicht",
             "dashboard": "Dashboard",
             "projects": "Projekte",
-            "team": "Teammitglieder",
-            "work": "Arbeit",
-            "board": "Board",
-            "agents": "Agenten",
-            "docs": "Doku",
-            "git": "Git",
             "account": "Konto",
-            "help": "Hilfe-Center",
             "settings": "Einstellungen"
         },
         "columns": {

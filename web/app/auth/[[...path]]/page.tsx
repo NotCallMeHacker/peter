@@ -2,7 +2,10 @@
 
 import { Suspense, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { PageHeader } from "../../_components/pageHeader";
+import { ThemeToggle } from "../../_components/themeToggle";
+import { LangSwitcher } from "../../_components/langSwitcher";
 import "./auth.css";
 
 /** Only same-origin absolute paths are honoured as post-login targets. */
@@ -13,6 +16,7 @@ function safeNext(raw: string | null): string {
 
 function AuthForm() {
     const t = useTranslations("auth");
+    const locale = useLocale();
     const router = useRouter();
     const search = useSearchParams();
 
@@ -60,13 +64,19 @@ function AuthForm() {
     return (
         <section className="main-container">
             <div className="auth">
-                <div className="auth-head">
-                    <span className="auth-mark" aria-hidden="true">
-                        peter
-                    </span>
-                    <h1>{mode === "signin" ? t("signInTitle") : t("signUpTitle")}</h1>
-                    <p className="auth-intro">{t("intro")}</p>
+                {/* The header's controls, re-homed: this card is bare of shell
+                    chrome (no header, no rail), so it carries its own. */}
+                <div className="auth-controls">
+                    <ThemeToggle />
+                    <LangSwitcher currentLocale={locale} />
                 </div>
+
+                <PageHeader
+                    mark="peter"
+                    title={mode === "signin" ? t("signInTitle") : t("signUpTitle")}
+                    path="/auth"
+                    note={t("intro")}
+                />
 
                 <div className="auth-tabs" role="tablist" aria-label={t("signInTitle")}>
                     <button
@@ -96,11 +106,11 @@ function AuthForm() {
                 </div>
 
                 {error ? (
-                    <p className="auth-error" role="alert">
+                    <p className="notice" role="alert">
                         {error}
                     </p>
                 ) : null}
-                {confirmSent ? <p className="auth-note">{t("confirmationSent")}</p> : null}
+                {confirmSent ? <p className="notice notice--info">{t("confirmationSent")}</p> : null}
 
                 <form className="auth-form" onSubmit={submit}>
                     <label className="auth-field">
@@ -129,7 +139,7 @@ function AuthForm() {
                             onChange={(event) => setPassword(event.target.value)}
                         />
                     </label>
-                    <button type="submit" className="auth-submit" disabled={busy}>
+                    <button type="submit" className="btn auth-submit" disabled={busy}>
                         {busy
                             ? t("working")
                             : mode === "signin"

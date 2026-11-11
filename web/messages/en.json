@@ -1,7 +1,5 @@
 {
     "common": {
-        "docs": "Docs",
-        "cliRepo": "CLI Repo",
         "logout": "Logout",
         "changeLanguage": "Change language",
         "somethingWentWrong": "Something went wrong while trying to get the session. Error - {error}",
@@ -16,6 +14,7 @@
         "signUpLogin": "Sign-up / Login"
     },
     "dashboard": {
+        "title": "Dashboard",
         "loginSuccessful": "Login successful",
         "yourUserId": "Your userID is:",
         "callAPI": "Call API"
@@ -36,6 +35,12 @@
         "continueWith": "Continue with",
         "confirmationSent": "Check your inbox to confirm your email address, then sign in.",
         "networkError": "Could not reach the server — please try again."
+    },
+    "settings": {
+        "title": "Settings",
+        "intro": "Theme and language for this browser.",
+        "theme": "Theme",
+        "language": "Language"
     },
     "theme": {
         "toggle": "Toggle theme",
@@ -65,14 +70,7 @@
             "overview": "Overview",
             "dashboard": "Dashboard",
             "projects": "Projects",
-            "team": "Team Members",
-            "work": "Work",
-            "board": "Board",
-            "agents": "Agents",
-            "docs": "Docs",
-            "git": "Git",
             "account": "Account",
-            "help": "Help Center",
             "settings": "Settings"
         },
         "columns": {

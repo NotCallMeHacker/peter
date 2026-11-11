@@ -1,210 +1,442 @@
-/* Base styles */
+/* Studio Workflow world — global layer.
+   Everything route- or component-specific lives with its own component; this
+   file carries only what the whole application shares: the token set, the
+   page field, the shell chrome, and the light palette the theme toggle leaves
+   in place until a dark world lands. */
+
+/* Self-hosted faces — bundled from @fontsource, never fetched at runtime. */
+@import "@fontsource/plus-jakarta-sans/400.css";
+@import "@fontsource/plus-jakarta-sans/500.css";
+@import "@fontsource/plus-jakarta-sans/600.css";
+@import "@fontsource/plus-jakarta-sans/700.css";
+@import "@fontsource/plus-jakarta-sans/800.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+
+/* ── tokens ─────────────────────────────────────────────────────
+   The same set the board declares on `.kb` (board.css), now global — one
+   vocabulary of ink, lines, status hues and signals for every surface. */
 :root {
-    --primary-color: #ff9933;
-    --primary-hover: #ff8a15;
-    --success-color: #3eb655;
-    --success-bg: #e7ffed;
-    --border-color: #e0e0e0;
+    --kb-card: #ffffff;
+    --kb-frame: #ffffff;
+    --kb-wash: #f4f5f9;
+    --kb-line-hover: #d5d9e4;
+    --kb-col-bg: #f6f7f9;
+    --kb-line: #e8eaf0;
+    --kb-line-strong: #eceef2;
+    /* ink — the secondary steps sit on the veil, whose darkest corner (the
+       field's upper-left) lands near #B4C6E0, so they are mixed darker than a
+       white ground would need: 4.5:1+ everywhere on the tint */
+    --kb-ink: #1f2340;
+    --kb-ink-soft: #3c4266;
+    --kb-muted: #454c72;
+    --kb-faint: #4e5580;
+    /* world */
+    --kb-navy-1: #343a87;
+    --kb-navy-2: #2b2f6b;
+    --kb-violet: #6d5ce7;
+    --kb-teal: #0f766e;
+    --kb-blue: #3b66e8;
+    --kb-blue-active: #3559d1;
+    --kb-green: #147a50;
+    --kb-coral: #f4643c;
+    /* column headers, sampled off the kanban4 reference — pill-only */
+    --kb-pill-violet: #9491dd;
+    --kb-pill-teal: #3fc6bf;
+    --kb-pill-blue: #4c90f3;
+    --kb-pill-green: #53c88e;
+    /* signals */
+    --kb-fail-ink: #b3452a;
+    --kb-fail-strong: #b3452a;
+    --kb-fail-bg: #fff1ec;
+    --kb-fail-line: #ffd9cc;
+    --kb-run-ink: #9a5b00;
+    --kb-run-bg: #fff5e5;
+    --kb-done-ink: #17724e;
+    --kb-done-bg: #e8f9f1;
+    /* tag tints */
+    --kb-tag-improvement-bg: #eef1ff;
+    --kb-tag-improvement-ink: #3d5fd6;
+    --kb-tag-chore-bg: #f1f3f9;
+    --kb-tag-chore-ink: #5a648f;
+    /* type */
+    --kb-font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --kb-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    /* depth — two tiers only: the cards' whisper, the cards' hover lift */
+    --kb-shadow-lift: 0 10px 24px rgba(31, 35, 64, 0.12);
+    --kb-shadow-card: 0 2px 8px rgba(48, 70, 134, 0.08);
+
+    /* the blue gradient page field — a slate-blue patch down the upper-left
+       edge and a whisper of it in the bottom-right corner, a white bloom
+       through the centre-right */
+    --kb-page:
+        radial-gradient(
+            45% 26% at -6% 19%,
+            rgba(104, 134, 192, 0.92) 0%,
+            rgba(140, 166, 210, 0.35) 50%,
+            rgba(155, 180, 215, 0) 100%
+        ),
+        radial-gradient(
+            46% 40% at 104% 104%,
+            rgba(118, 146, 200, 0.3) 0%,
+            rgba(155, 180, 215, 0) 100%
+        ),
+        radial-gradient(
+            92% 86% at 72% 62%,
+            rgba(255, 255, 255, 1) 0%,
+            rgba(255, 255, 255, 0.9) 42%,
+            rgba(255, 255, 255, 0.4) 78%,
+            rgba(255, 255, 255, 0) 105%
+        ),
+        linear-gradient(160deg, #9db4d9 0%, #a4b9dd 25%, #b7c7e7 50%, #cdd7ef 75%, #d9e0f3 100%);
 }
 
-@font-face {
-    font-family: Menlo;
-    src: url("/assets/fonts/MenloRegular.ttf");
-}
-
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-        "Droid Sans", "Helvetica Neue", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
+/* ── base ────────────────────────────────────────────────────── */
 * {
     box-sizing: border-box;
 }
 
-/* Layout */
+body {
+    margin: 0;
+    /* The world's ground: the kanban field, painted on the root so it sits
+       behind every piece of chrome (header, footer, rail reserve) and stays
+       put through overscroll — no route "earns" the background. */
+    background: var(--kb-page);
+    font-family: var(--kb-font);
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--kb-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+    background: #dfe6ff;
+    color: var(--kb-ink);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--kb-line-hover);
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+:focus-visible {
+    outline: 2px solid var(--kb-blue);
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
+
+/* ── shell ─────────────────────────────────────────────────────
+   AppShell builds: .app-container > .fill (#home-container) > page + footer
+   (there is no header — the rail's brand block carries the wordmark). The field paints on `body` (one ground behind all of it); routes
+   only override *layout* — the kanban route clips its own height through the
+   same `:has(.kb)` guard. The rail's 76px is reserved by the container so the
+   sidebar can ride the field as an absolute overlay without ever reflowing
+   the main column. */
 .app-container {
+    position: relative;
     display: flex;
     flex-direction: column;
     width: 100%;
     min-height: 100vh;
-    font-family: Rubik, sans-serif;
+    min-height: 100dvh;
+    padding-left: 76px;
+    font-family: var(--kb-font);
+}
+
+/* The board needs an exact-viewport clipping box — it owns its own height —
+   every other route scrolls on this flex file, sized by its content. */
+#home-container {
+    overflow-y: auto;
+    overflow-x: clip;
+}
+
+/* The sidebar is an absolute overlay (`.kb { padding-left: 76px }` reserves
+   its rail), so it hangs off the page root, not the scrolling field: the
+   hamburger stays pinned top-left while the page scrolls under the rail. */
+#home-container:has(.kb) {
+    position: static;
+    overflow: hidden;
+    overflow: clip;
 }
 
 .fill {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     flex: 1;
-    padding-top: 10px;
+    min-height: 0;
+    /* no background here — the ground belongs to `body`; this box only
+       scrolls (and `overflow-x: clip`, never hidden, so the field never
+       conjures a second scrollbar trap) */
+    overflow-x: clip;
 }
 
-/* Header */
-header {
-    border-bottom: 2px solid var(--border-color);
-    padding: 8px;
+/* ── settings ─────────────────────────────────────────────────
+   One control per row: label left, the shared MenuButton right. */
+.settings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-header nav {
+.settings-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%;
-}
-
-header img {
-    width: 40px;
-}
-
-header ul {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-header a {
-    color: var(--primary-color);
+    gap: 16px;
+    padding: 14px 16px;
+    background: var(--kb-card);
+    border: 1px solid var(--kb-line);
+    border-radius: 12px;
+    font-size: 13.5px;
     font-weight: 600;
-    text-decoration: none;
+    color: var(--kb-ink);
 }
 
-header a:hover {
-    color: var(--primary-hover);
+
+@media (max-width: 860px) {
+    .app-container {
+        padding-left: 0;
+    }
 }
 
-/* Wordmark: text logo, kanban-style */
-header a.brand-mark {
-    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    color: #1f2340;
-}
+/* ── shell chrome ────────────────────────────────────────────── */
+/* The header (wordmark + external links) is gone by design — the rail's brand
+   block is the only wordmark now, and the docs/repo links left with it.
 
-.dark header a.brand-mark {
-    color: #e8eaf5;
-}
-
-/* Home page */
-#home-container {
-    align-items: center;
-    min-height: calc(100vh - 120px);
-    background: url("/assets/images/background.png") center/cover;
-}
-
-.logos {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding-bottom: 80px;
-    padding-top: 20px;
-}
-
-.logos span {
-    font-size: 8rem;
-    font-weight: bold;
-}
-
-.logos img {
-    height: 240px;
-    width: auto;
-}
-
-/* Main content */
-.main-container {
-    box-shadow: 0 0 60px rgba(0, 0, 0, 0.16);
-    width: min(635px, calc(100% - 24px));
-    border-radius: 16px;
-    background-color: white;
-}
-
-.success-title {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 26px;
-    background-color: var(--success-bg);
-    color: var(--success-color);
-    font-size: 20px;
-    line-height: 1;
-}
-
-.success-title img {
-    margin-right: 8px;
-}
-
-.inner-content {
-    padding: 48px;
+   machine-line register: the footer is a build stamp, not prose */
+footer {
+    padding: 24px 24px 32px;
+    font-family: var(--kb-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
     text-align: center;
+    color: var(--kb-faint);
+}
+
+/* ── page card ────────────────────────────────────────────────
+   The white well every framed page stands on the field — the reference's
+   card, with the same whisper the issue cards carry. */
+.main-container {
+    width: min(720px, calc(100% - 40px));
+    margin: clamp(24px, 6vh, 64px) auto;
+    background: var(--kb-card);
+    border: 1px solid var(--kb-line);
+    border-radius: 18px;
+    box-shadow: var(--kb-shadow-card);
+    color: var(--kb-ink);
+}
+
+/* Page heading block: the 30/800 display title, the route path directly
+   under it and an optional prose note — the shape every page leads with. */
+.page-head {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 10px;
+    margin-bottom: 26px;
 }
 
-/* User ID display */
-#user-id {
-    position: relative;
-    width: min(430px, calc(100% - 30px));
-    margin: 11px auto 23px;
-    padding: 14px 17px;
-    border-radius: 9px;
-    font-family: Menlo, monospace;
-    line-height: 1;
-    cursor: text;
-    border: 3px solid var(--primary-color);
+/* The path register: the line directly under a page's title is a route path
+   — a machine fact, so it takes the mono face, like ids and timestamps.
+   Prose notes below it stay in the body face. */
+.page-path {
+    margin: 0;
+    font-family: var(--kb-mono);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: var(--kb-muted);
 }
 
-/* Buttons and navigation */
-.buttons {
+.page-title {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--kb-ink);
+    text-wrap: balance;
+}
+
+.page-intro {
+    margin: 0;
+    max-width: 62ch;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--kb-muted);
+}
+
+/* Inner padding shared by every framed page body (the kanban picker matches
+   it from projects.css). */
+.page {
+    padding: 40px 40px 44px;
+}
+
+/* A row of page-level actions under the content. */
+.page-actions {
     display: flex;
-    gap: 4px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
 }
 
-.dashboard-button {
-    padding: 8px 13px;
-    background: var(--primary-color);
-    border: 1px solid var(--primary-hover);
-    border-radius: 6px;
-    box-shadow: 0 3px 6px rgba(255, 153, 51, 0.16);
-    color: white;
-    font-weight: bold;
-    font-size: 16px;
-    cursor: pointer;
+/* Machine fact in the page body — the board's id chip register at prose size
+   (mono is for what the machine owns: ids, hashes, timestamps). */
+.meta-value {
+    margin: 8px 0 0;
+    padding: 12px 15px;
+    background: var(--kb-col-bg);
+    border: 1px solid var(--kb-line);
+    border-radius: 12px;
+    font-family: var(--kb-mono);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--kb-faint);
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 560px) {
+    .page {
+        padding: 28px 20px 32px;
+    }
+
+    .page-title {
+        font-size: 26px;
+    }
+}
+
+/* 40px navy gradient tile with a white glyph — brand mark and project tile
+   are the same object (radius 11, 160° #343A87 → #2B2F6B). */
+.tile {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(160deg, var(--kb-navy-1), var(--kb-navy-2));
+    border-radius: 11px;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.tile--mark {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+/* One primary action: the navy gradient lozenge the auth submit already
+   carries — surface buttons and links take the same shape. */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 18px;
+    background: linear-gradient(160deg, var(--kb-navy-1), var(--kb-navy-2));
+    border: 0;
+    border-radius: 10px;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
     text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.1s ease;
 }
 
-footer {
-    padding: 10px;
+.btn:hover {
+    background: linear-gradient(160deg, #3d45a0, #33387a);
 }
 
-footer a {
-    color: var(--primary-color);
-    font-weight: 600;
+.btn:active {
+    transform: translateY(1px);
 }
 
-footer a:hover {
-    color: var(--primary-hover);
+.btn:disabled {
+    opacity: 0.6;
+    cursor: default;
 }
 
-/* Selectors (theme, language…) — MenuButton primitive */
+.btn--quiet {
+    background: transparent;
+    border: 1px solid var(--kb-line-strong);
+    color: var(--kb-ink-soft);
+}
+
+.btn--quiet:hover {
+    background: var(--kb-col-bg);
+    color: var(--kb-ink);
+}
+
+/* The one dashed silhouette: empty state, used by every surface. */
+.empty {
+    margin: 0;
+    padding: 18px 14px;
+    border: 1.5px dashed var(--kb-line-strong);
+    border-radius: 14px;
+    font-size: 12.5px;
+    font-weight: 500;
+    text-align: center;
+    color: var(--kb-muted);
+}
+
+/* Signal notices — the failure/info washes from the board's tag family. */
+.notice {
+    margin: 0;
+    padding: 10px 14px;
+    border: 1px solid var(--kb-fail-line);
+    border-radius: 10px;
+    background: var(--kb-fail-bg);
+    color: var(--kb-fail-ink);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.notice--info {
+    border-color: #d9e0f3;
+    background: var(--kb-tag-improvement-bg);
+    color: var(--kb-muted);
+}
+
+/* ── selector primitives (MenuButton) ─────────────────────────── */
 .menu-trigger {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     background: transparent;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--kb-line-strong);
     border-radius: 6px;
     padding: 6px 10px;
     color: inherit;
     font-size: 14px;
-    cursor: pointer;
     font-family: inherit;
     line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
 }
 
 .menu-trigger svg,
@@ -213,7 +445,8 @@ footer a:hover {
 }
 
 .menu-trigger:hover {
-    border-color: var(--primary-color);
+    background: #ffffff;
+    color: var(--kb-ink);
 }
 
 .menu-trigger:disabled {
@@ -221,11 +454,11 @@ footer a:hover {
 }
 
 .menu-panel {
-    background: white;
-    border: 1px solid var(--border-color);
+    background: var(--kb-frame);
+    border: 1px solid var(--kb-line);
     border-radius: 8px;
     padding: 6px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 32px rgba(31, 35, 64, 0.16);
     z-index: 50;
     min-width: 140px;
 }
@@ -238,63 +471,24 @@ footer a:hover {
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
-    color: #111;
+    color: var(--kb-ink-soft);
     outline: none;
 }
 
 .menu-item:hover,
 .menu-item--on {
-    background: rgba(255, 153, 51, 0.12);
-    color: var(--primary-hover);
+    background: #eef1ff;
+    color: var(--kb-blue-active);
 }
 
+/* The world ships light for now; the theme toggle stays in place for the dark
+   world to come. */
 .dark body {
-    background-color: #0f172a;
-    color: #e2e8f0;
-}
-
-.dark #home-container {
-    background: #0f172a;
+    background-color: var(--kb-page);
+    color: var(--kb-ink);
 }
 
 .dark .main-container {
-    background-color: #1e293b;
-    color: #e2e8f0;
+    background-color: var(--kb-card);
+    color: var(--kb-ink);
 }
-
-.dark .success-title {
-    background-color: #064e3b;
-    color: #34d399;
-}
-
-.dark header {
-    border-bottom: 2px solid #334155;
-}
-
-.dark header a {
-    color: #ff9933;
-}
-
-.dark header a:hover {
-    color: #ff8a15;
-}
-
-.dark footer a {
-    color: #ff9933;
-}
-
-.dark .menu-trigger {
-    border-color: #475569;
-    color: #e2e8f0;
-}
-
-.dark .menu-panel {
-    background: #1e293b;
-    border-color: #334155;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-}
-
-.dark .menu-item {
-    color: #e2e8f0;
-}
-

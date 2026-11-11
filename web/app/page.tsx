@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getLocale, createServerTranslator } from "./_lib/i18n";
 import { getSession } from "./_lib/session";
+import { PageHeader } from "./_components/pageHeader";
 
 /**
  * Demo heritage landing page (PRODUCT.md: scaffold history, not product truth).
@@ -20,20 +21,19 @@ export default async function Home() {
 
     return (
         <section className="main-container">
-            <div className="inner-content">
-                <h1>
-                    <strong>peter</strong> × <strong>Kanban</strong> <br /> {t("title")}
-                </h1>
-                <div>
-                    {signedIn ? <p>{t("signedIn")}</p> : <p>{t("signIn")}</p>}
-                </div>
-                <nav className="buttons">
+            <div className="page">
+                <PageHeader
+                    title="peter × Kanban"
+                    path="/"
+                    note={signedIn ? t("signedIn") : t("signIn")}
+                />
+                <nav className="page-actions">
                     {signedIn ? (
-                        <Link href="/kanban" className="dashboard-button">
+                        <Link href="/kanban" className="btn">
                             {t("dashboard")}
                         </Link>
                     ) : (
-                        <Link href="/auth" className="dashboard-button">
+                        <Link href="/auth" className="btn">
                             {t("signUpLogin")}
                         </Link>
                     )}

@@ -2,21 +2,9 @@
 
 import { useRef } from "react";
 import { useTranslations } from "next-intl";
-import {
-    LayoutDashboard,
-    Users,
-    FolderKanban,
-    Bot,
-    FileText,
-    GitBranch,
-    HelpCircle,
-    Settings,
-    Search,
-    Bell,
-    Send,
-} from "lucide-react";
-import { Sidebar, type SidebarGroup } from "../_components/sidebar";
-import { LogoutButton } from "./logoutButton";
+import { Send } from "lucide-react";
+import { EmptyState } from "../_components/card";
+import { PageHeader } from "../_components/pageHeader";
 import {
     columnLabelKey,
     type Board,
@@ -78,29 +66,12 @@ function BoardColumn({ column }: { column: Column }) {
                 <span className="pill-dot" aria-hidden="true" />
             </div>
             <div className="kb-col-cards">
-                {column.issues.length === 0 && <p className="kb-col-empty">{t("columns.empty")}</p>}
+                {column.issues.length === 0 && <EmptyState>{t("columns.empty")}</EmptyState>}
                 {column.issues.map((issue) => (
                     <IssueCard key={issue.id} issue={issue} />
                 ))}
             </div>
         </section>
-    );
-}
-
-function TopBar({ searchLabel, notificationsLabel }: { searchLabel: string; notificationsLabel: string }) {
-    return (
-        <header className="kb-top">
-            <button className="kb-search" type="button" aria-label={searchLabel}>
-                <Search size={16} />
-            </button>
-            <button className="kb-bell" type="button" aria-label={notificationsLabel}>
-                <Bell size={17} />
-                <span className="kb-bell-dot" aria-hidden="true" />
-            </button>
-            <span className="avatar avatar--blue avatar--me" aria-hidden="true">
-                P
-            </span>
-        </header>
     );
 }
 
@@ -138,7 +109,7 @@ function AgentChat({ messages }: { messages: ChatMessage[] }) {
         <aside className="chat" aria-label={t("agentChat")}>
             <h2 className="chat-head">{t("agentChat")}</h2>
             <div className="chat-msgs">
-                {messages.length === 0 && <p className="kb-col-empty">{t("chatEmpty")}</p>}
+                {messages.length === 0 && <EmptyState>{t("chatEmpty")}</EmptyState>}
                 {messages.map((msg, i) => (
                     <div key={i} className={"msg" + (msg.mine ? " msg--me" : "")}>
                         <span className="msg-who">{msg.meta}</span>
@@ -156,62 +127,22 @@ function AgentChat({ messages }: { messages: ChatMessage[] }) {
 
 export default function KanbanPage({ board }: { board: Board }) {
     const t = useTranslations("kanban");
-    const tCommon = useTranslations("common");
-
     const { project } = board;
-    // title subline: project name followed by its live worktrees, as designed
+    // route card note: the project name with its live worktrees — the path
+    // rides on its own line directly under the title (PageHeader below)
     const subline = [project.name, ...project.worktrees.map((wt) => wt.name)].join(" · ");
 
     // opening / refreshing the mobile rail starts on the first kanban column
     const railRef = useRef<HTMLDivElement>(null);
     useStartOnFirstColumn(railRef);
 
-    const groups: SidebarGroup[] = [
-        {
-            section: t("nav.overview"),
-            items: [
-                { icon: LayoutDashboard, label: t("nav.dashboard"), href: "/dashboard" },
-                { icon: FolderKanban, label: t("nav.projects"), href: "/kanban" },
-                { icon: Users, label: t("nav.team"), href: "/kanban" },
-            ],
-        },
-        {
-            section: t("nav.work"),
-            items: [
-                { icon: FolderKanban, label: t("nav.board"), href: `/kanban/${board.publicId}`, active: true },
-                { icon: Bot, label: t("nav.agents"), href: "/kanban", badge: project.needYou },
-                { icon: FileText, label: t("nav.docs"), href: "/kanban" },
-                { icon: GitBranch, label: t("nav.git"), href: "/kanban" },
-            ],
-        },
-        {
-            section: t("nav.account"),
-            items: [
-                { icon: HelpCircle, label: t("nav.help"), href: "/kanban" },
-                { icon: Settings, label: t("nav.settings"), href: "/kanban" },
-            ],
-        },
-    ];
+    // The sidebar is the shell's single rail (app/_components/shellSidebar) —
+    // one instance per page, one set of animations everywhere.
 
     return (
         <div className="kb">
-            <Sidebar
-                brand={{ title: "peter", subtitle: t("brandSub") }}
-                groups={groups}
-                foot={<LogoutButton label={tCommon("logout")} />}
-                menuLabel={tCommon("openMenu")}
-                closeLabel={tCommon("closeMenu")}
-            />
-
             <div className="kb-main">
-                <TopBar searchLabel={t("search")} notificationsLabel={t("notifications")} />
-
-                <div className="kb-title">
-                    <div>
-                        <h1>{t("title")}</h1>
-                        <p className="kb-title-sub">{subline}</p>
-                    </div>
-                </div>
+                <PageHeader title={t("title")} path={`/kanban/${board.publicId}`} note={subline} />
 
                 <div className="kb-board" ref={railRef}>
                     <div className="kb-stack">

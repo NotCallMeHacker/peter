@@ -2,6 +2,8 @@ import Link from "next/link";
 import { RequireSession } from "../_components/requireSession";
 import { listProjects } from "../_lib/kanbanRepo";
 import { createServerTranslator, getLocale } from "../_lib/i18n";
+import { EmptyState } from "../_components/card";
+import { PageHeader } from "../_components/pageHeader";
 import "./projects.css";
 
 /**
@@ -21,11 +23,10 @@ async function ProjectList({ ownerId }: { ownerId: string }) {
     return (
         <div className="main-container">
             <div className="projects">
-                <h1>{t("projectsHeading")}</h1>
-                <p className="projects-intro">{t("projectsIntro")}</p>
+                <PageHeader title={t("projectsHeading")} path="/kanban" note={t("projectsIntro")} />
 
                 {projects.length === 0 ? (
-                    <p className="projects-empty">{t("projectsEmpty")}</p>
+                    <EmptyState>{t("projectsEmpty")}</EmptyState>
                 ) : (
                     <ul className="project-list">
                         {projects.map((project) => (
