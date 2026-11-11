@@ -2,9 +2,9 @@
 
 ## user
 represents a user of the application
-table: supertokens.all_auth_recipe_users  
-Managed by SuperTokens; no local fields.
-- id: `user_id` varchar(36) (uuid) — this is the value every local user reference stores (`group.ownerId`, `comment.userId`). It has no local table, so those references are logical: no physical FK can point at the SuperTokens primary key (app_id, tenant_id, user_id).
+table: auth.users (schema `auth`, Supabase Auth / GoTrue)  
+Managed by GoTrue; no local fields.
+- id: `user_id` uuid — this is the value every local user reference stores (`group.ownerId`, `comment.userId`). It has no local table in `app`, so those references are logical: no physical FK can point across schemas at the auth primary key. The value also appears as `sub` in the access token PostgREST receives, which is what the RLS policies compare against.
 
 ## group
 represents a group of users (placeholder for future use; currently maps 1:1 to a user)

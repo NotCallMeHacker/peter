@@ -23,7 +23,6 @@ include:
   # (separate include entries do not merge with each other).
   - path:
       - supabase/docker-compose.yml
-      - supabase/docker-compose.supertokens.yml
     env_file: supabase/.env
       # - supabase/docker-compose.logs.yml   # Logflare + Vector (Studio logs UI)
       # - supabase/docker-compose.s3.yml     # S3 storage backend (MinIO)
@@ -32,9 +31,9 @@ include:
       # - supabase/docker-compose.kong.yml   # Kong instead of Envoy
 
 services:
-  # Next.js web app (SuperTokens frontend + API routes)
-  # The app is hardcoded to http://localhost:3000 (see web/app/config/*),
-  # so keep the host port at 3000 unless you also change those domains.
+  # Next.js web app. Session gate + kanban reads: GoTrue issues the access
+  # token, the server forwards it to PostgREST (server-mediated, RLS verified).
+  # Keep the host port at 3000 — GoTrue's GOTRUE_SITE_URL points there.
   web:
     container_name: web
     build: ./web
@@ -44,25 +43,15 @@ services:
     environment:
       HOSTNAME: "0.0.0.0"
       PORT: 3000
-      SUPERTOKENS_CONNECTION_URI: ${SUPERTOKENS_CONNECTION_URI:?Set SUPERTOKENS_CONNECTION_URI in .env}
-      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:?Set GITHUB_CLIENT_ID in .env}
-      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:?Set GITHUB_CLIENT_SECRET in .env}
-      DB_DIALECT: ${DB_DIALECT:-postgres}
-      DB_HOST: ${DB_HOST:-supabase-db}
-      DB_PORT: ${DB_PORT:-5432}
-      DB_NAME: ${DB_NAME:-postgres}
-      DB_USER: ${DB_USER:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
-      DB_LOGGING: ${DB_LOGGING:-false}
       DB_SCHEMA: ${DB_SCHEMA:-app}
       # Supabase REST API (PostgREST) — the kanban board reads the app schema
-      # from it; inside the compose network the gateway is api-gw:8000
+      # from it; inside the compose network the gateway is api-gw:8000.
+      # Only the anon key (needed as the `apikey` header) reaches the app:
+      # identity travels in the GoTrue session token, so there is no
+      # SUPABASE_JWT_SECRET here — and no DB_* credentials: the app has no
+      # direct Postgres access (sequelize-cli migrations run on the host).
       SUPABASE_URL: ${SUPABASE_URL:-http://api-gw:8000}
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:?Set SUPABASE_ANON_KEY in .env (copy it from supabase/.env)}
-      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
-      # JWT_SECRET from supabase/.env — signs the per-request token whose `sub`
-      # the RLS policies on the app schema resolve the caller from
-      SUPABASE_JWT_SECRET: ${SUPABASE_JWT_SECRET:?Set SUPABASE_JWT_SECRET in .env (copy JWT_SECRET from supabase/.env)}
     healthcheck:
       test:
         [

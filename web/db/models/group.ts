@@ -3,7 +3,7 @@ import { Model, DataTypes, Sequelize } from 'sequelize';
 
 export interface GroupAttributes {
     id: number;
-    /** User id from supertokens.all_auth_recipe_users.user_id (uuid). */
+    /** User id from auth.users.id (uuid) — Supabase Auth (GoTrue) owns accounts. */
     ownerId: string;
     name: string;
     deleted: boolean;

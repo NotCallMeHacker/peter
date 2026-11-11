@@ -10,7 +10,7 @@ export default async function Dashboard() {
 
     return (
         <RequireSession>
-            {(accessTokenPayload) => (
+            {(user) => (
                 <div className="main-container">
                     <div className="top-band success-title bold-500">
                         <Image src={CelebrateIcon} alt="Login successful" className="success-icon" />{" "}
@@ -19,7 +19,7 @@ export default async function Dashboard() {
                     <div className="inner-content">
                         <div>{t("yourUserId")}</div>
                         <div className="truncate" id="user-id">
-                            {accessTokenPayload.sub}
+                            {user.sub}
                         </div>
                         <DashboardButtons />
                     </div>

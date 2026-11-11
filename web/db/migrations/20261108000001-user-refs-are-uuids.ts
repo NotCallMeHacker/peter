@@ -3,16 +3,16 @@
 import { QueryInterface } from 'sequelize';
 
 /**
- * Local user references store the SuperTokens user id, not an integer.
+ * Local user references store the account id, not an integer.
  *
- * `supertokens.all_auth_recipe_users.user_id` is a uuid (varchar(36)), so
+ * `auth.users.id` (Supabase Auth / GoTrue) is a uuid (varchar(36)), so
  * `Groups.ownerId` and `Comments.userId` — the two columns that name a user —
  * have to hold the same shape. The init migration created them as integers
  * (models.md said "FK → user.id" before the user table was inspected); this
  * widens them in place, so both fresh and already-migrated databases converge.
  *
- * No physical FK is added: the SuperTokens primary key is the composite
- * (app_id, tenant_id, user_id), which a single-column FK cannot reference.
+ * No physical FK is added: the auth users live in another schema (`auth`),
+ * which a single-column FK in `app` cannot reach portably.
  *
  * Both statements are guarded, so re-running the migration is a no-op.
  */

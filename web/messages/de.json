@@ -20,6 +20,23 @@
         "yourUserId": "Deine Benutzer-ID:",
         "callAPI": "API aufrufen"
     },
+    "auth": {
+        "signInTitle": "Anmelden",
+        "signUpTitle": "Konto erstellen",
+        "intro": "Ein Konto für alle Boards in peter.",
+        "tabSignIn": "Anmelden",
+        "tabSignUp": "Registrieren",
+        "email": "E-Mail",
+        "password": "Passwort",
+        "passwordHint": "Mindestens 8 Zeichen.",
+        "submitSignIn": "Anmelden",
+        "submitSignUp": "Konto erstellen",
+        "working": "Wird verarbeitet…",
+        "or": "oder",
+        "continueWith": "Weiter mit",
+        "confirmationSent": "Prüfe dein Postfach, um deine E-Mail-Adresse zu bestätigen, und melde dich dann an.",
+        "networkError": "Server nicht erreichbar — bitte erneut versuchen."
+    },
     "theme": {
         "toggle": "Thema wechseln",
         "system": "System",

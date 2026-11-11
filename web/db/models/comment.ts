@@ -4,7 +4,7 @@ import { Model, DataTypes, Sequelize } from 'sequelize';
 export interface CommentAttributes {
     id: number;
     issueId: number;
-    /** User id from supertokens.all_auth_recipe_users.user_id (uuid). */
+    /** User id from auth.users.id (uuid) — Supabase Auth (GoTrue) owns accounts. */
     userId: string;
     content: string;
     deleted: boolean;

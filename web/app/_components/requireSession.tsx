@@ -1,52 +1,37 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import type { JwtPayload } from "jsonwebtoken";
-import { TryRefreshComponent } from "./tryRefreshClientComponent";
-import { SessionAuthForNextJS } from "./sessionAuthForNextJS";
-import { getSessionForSSR } from "../_lib/util";
+import type { SessionUser } from "@/app/_lib/auth";
+import { getSession } from "../_lib/session";
 import { getLocale, createServerTranslator } from "../_lib/i18n";
 
 type Props = {
-    children: React.ReactNode | ((payload: JwtPayload) => React.ReactNode);
+    children: React.ReactNode | ((user: SessionUser) => React.ReactNode);
 };
 
 /**
- * Server component that gates a page behind an active session.
+ * Server component that gates a page behind a GoTrue session.
  *
- * - Renders an error message if the token could not be verified.
- * - Redirects to /auth if the user has no session token at all.
- * - Renders TryRefreshComponent if a token exists but is expired,
- *   so the client can refresh and retry.
- * - Otherwise wraps the children in SessionAuthForNextJS for
- *   client-side session enforcement.
+ * - Redirects to /auth when there is no (or no longer a valid) session;
+ *   proxy.ts already refreshed near-expiry tokens before we get here.
+ * - Renders a readable error if GoTrue itself is unreachable.
+ * - Otherwise hands the verified user to the children — `user.sub` is the id
+ *   the RLS policies resolve the caller from, so pages pass it as `ownerId`.
  */
 export async function RequireSession({ children }: Props) {
     const locale = await getLocale();
     const { t } = createServerTranslator(locale, "common");
-    const cookiesFromReq = await cookies();
-    const cookiesArray: Array<{ name: string; value: string }> = Array.from(cookiesFromReq.getAll()).map(
-        ({ name, value }) => ({
-            name,
-            value,
-        })
-    );
-    const { accessTokenPayload, hasToken, error } = await getSessionForSSR(cookiesArray);
 
-    if (error) {
-        return <div>{t("somethingWentWrong", { error: error.message })}</div>;
+    let session: Awaited<ReturnType<typeof getSession>>;
+    try {
+        session = await getSession();
+    } catch (error) {
+        return <div>{t("somethingWentWrong", { error: (error as Error).message })}</div>;
     }
 
-    if (accessTokenPayload === undefined) {
-        if (!hasToken) {
-            redirect("/auth");
-        }
-
-        return <TryRefreshComponent key={Date.now()} />;
+    if (!session.user) {
+        // proxy.ts redirects gated paths before a render starts, so reaching
+        // here means the refresh failed mid-request — restart at /auth.
+        redirect("/auth");
     }
 
-    return (
-        <SessionAuthForNextJS>
-            {typeof children === "function" ? children(accessTokenPayload) : children}
-        </SessionAuthForNextJS>
-    );
+    return <>{typeof children === "function" ? children(session.user) : children}</>;
 }

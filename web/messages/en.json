@@ -20,6 +20,23 @@
         "yourUserId": "Your userID is:",
         "callAPI": "Call API"
     },
+    "auth": {
+        "signInTitle": "Sign in",
+        "signUpTitle": "Create your account",
+        "intro": "One account for every board in peter.",
+        "tabSignIn": "Sign in",
+        "tabSignUp": "Sign up",
+        "email": "Email",
+        "password": "Password",
+        "passwordHint": "At least 8 characters.",
+        "submitSignIn": "Sign in",
+        "submitSignUp": "Create account",
+        "working": "Working…",
+        "or": "or",
+        "continueWith": "Continue with",
+        "confirmationSent": "Check your inbox to confirm your email address, then sign in.",
+        "networkError": "Could not reach the server — please try again."
+    },
     "theme": {
         "toggle": "Toggle theme",
         "system": "System",

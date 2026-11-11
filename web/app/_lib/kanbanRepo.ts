@@ -9,13 +9,14 @@
  * first layer: a project is reachable only through the group whose `ownerId`
  * is the session user (`sub`), so anything foreign answers as if it did not
  * exist. The second layer is Row Level Security (migration
- * `20261108000002-row-level-security`): every query runs as the `anon` role
- * with a per-request token carrying that `sub`, and the policies only let the
- * rows of the caller's own projects through — so a future query that forgets a
+ * `20261108000002-row-level-security`): every query runs with the signed-in
+ * user's GoTrue access token (forwarded by `appSchema()` — see `db.ts`), whose
+ * `sub` the policies resolve the caller from, so a future query that forgets a
  * filter returns nothing instead of somebody else's board. Never use the
  * service role for a user-facing read: it bypasses RLS.
  *
- * Server-only: reads the Supabase key from the environment.
+ * Server-only: reads the session cookie, so it must not be imported from a
+ * client component.
  */
 
 import type { GroupAttributes } from "../../db/models/group";
@@ -81,7 +82,7 @@ export type ProjectListItem = {
 /** Ids of the groups this user owns — models.md maps a group 1:1 to a user. */
 async function ownedGroupIds(ownerId: string): Promise<number[]> {
     if (!ownerId) return [];
-    const db = appSchema(ownerId);
+    const db = await appSchema();
     const res = await db
         .from("Groups")
         .select("id")
@@ -92,7 +93,7 @@ async function ownedGroupIds(ownerId: string): Promise<number[]> {
 
 /** The caller's live projects, with cheap board sizes for the picker. */
 export async function listProjects(ownerId: string): Promise<ProjectListItem[]> {
-    const db = appSchema(ownerId);
+    const db = await appSchema();
     const groupIds = await ownedGroupIds(ownerId);
     if (groupIds.length === 0) return [];
 
@@ -148,7 +149,7 @@ export async function listProjects(ownerId: string): Promise<ProjectListItem[]> 
  * even be used to probe which projects exist.
  */
 export async function loadBoard(ownerId: string, internalId: number): Promise<Board | null> {
-    const db = appSchema(ownerId);
+    const db = await appSchema();
     const projectRes = await db
         .from("Projects")
         .select("*")

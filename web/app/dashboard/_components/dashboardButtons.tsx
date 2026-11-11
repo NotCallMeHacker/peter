@@ -1,6 +1,5 @@
 "use client";
 
-import { signOut } from "supertokens-auth-react/recipe/session";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -10,13 +9,17 @@ export default function DashboardButtons() {
     const tCommon = useTranslations("common");
 
     const callAPIClicked = async () => {
-        const userInfoResponse = await fetch("http://localhost:3000/api/user");
+        const userInfoResponse = await fetch("/api/user");
         alert(JSON.stringify(await userInfoResponse.json()));
     };
 
     async function logoutClicked() {
-        await signOut();
-        router.push("/");
+        try {
+            await fetch("/api/auth/signout", { method: "POST" });
+        } finally {
+            router.push("/");
+            router.refresh();
+        }
     }
 
     return (

@@ -8,8 +8,8 @@ import { getLocale, getMessages } from "./_lib/i18n";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "SuperTokens + Nextjs",
-    description: "SuperTokens demo app",
+    title: "peter — Kanban",
+    description: "Kanban boards for teams — peter",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

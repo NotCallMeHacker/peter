@@ -10,7 +10,7 @@
 -- the constraint models.md defines.
 --
 -- Ownership: every project joins its group through `Projects.groupId`, and the
--- group names its owner in `Groups.ownerId` — the SuperTokens user id, stored
+-- group names its owner in `Groups.ownerId` — the account id from `auth.users`,
 -- verbatim (uuid, varchar(36)). The board renders a comment as "YOU" when its
 -- `Comments.userId` equals the group's ownerId, so the seed writes the same id
 -- into both columns. Nothing else may see those projects: the app scopes every
@@ -23,11 +23,11 @@
 -- list is the only place that decides who owns what.
 
 -- Accounts the seeded groups and comments belong to:
--- supertokens.all_auth_recipe_users.user_id
+-- auth.users.id (Supabase Auth / GoTrue)
 CREATE TEMP TABLE seed_owner (role text, user_id varchar(36), group_name text) ON COMMIT DROP;
 INSERT INTO seed_owner (role, user_id, group_name) VALUES
     ('main',     '42f27c43-dc9b-413b-b58a-3a4e4248f754', 'Peter'),
-    ('teammate', 'f1e4435e-f1f7-4ae1-b329-6e660a90795f', 'Docs');
+    ('teammate', 'a7537779-bbd4-4c9d-98a4-c53304d74887', 'Docs');
 
 -- ── 1. clear a previous run (children first; the rest cascades) ──────────────
 DELETE FROM app."Issues"

@@ -41,28 +41,6 @@ body {
     padding-top: 10px;
 }
 
-/* Demo-only banner — remove these rules once you stop using try.supertokens.com. */
-.separator-line {
-    max-width: 100%;
-    height: auto;
-}
-.demo-warning-banner {
-    background-color: #fff4d6;
-    color: #7a5b00;
-    border-bottom: 1px solid #e5c87a;
-    padding: 10px 16px;
-    text-align: center;
-    font-size: 14px;
-    line-height: 1.4;
-}
-
-.demo-warning-banner code {
-    background: rgba(0, 0, 0, 0.08);
-    padding: 1px 5px;
-    border-radius: 3px;
-    font-size: 13px;
-}
-
 /* Header */
 header {
     border-bottom: 2px solid var(--border-color);
@@ -97,6 +75,19 @@ header a {
 
 header a:hover {
     color: var(--primary-hover);
+}
+
+/* Wordmark: text logo, kanban-style */
+header a.brand-mark {
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #1f2340;
+}
+
+.dark header a.brand-mark {
+    color: #e8eaf5;
 }
 
 /* Home page */
@@ -198,92 +189,6 @@ footer a {
 
 footer a:hover {
     color: var(--primary-hover);
-}
-
-#st-tenant-selector-footer {
-    width: 100%;
-    text-align: center;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-        "Droid Sans", "Helvetica Neue", sans-serif;
-    box-sizing: border-box;
-    flex-grow: 1;
-    padding-top: 20px;
-}
-
-#st-tenant-selector-footer span {
-    margin-right: 10px;
-    font-size: 16px;
-    font-weight: semibold;
-}
-
-#st-tenant-selector-footer button {
-    background-color: transparent;
-    border: 1px solid #ff9900;
-    color: #ff9900;
-    padding: 4px 9px;
-    border-radius: 4px;
-    font-weight: normal;
-    cursor: pointer;
-}
-
-#st-tenant-modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 10001;
-}
-
-#st-tenant-modal {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    min-width: 300px;
-    max-width: 500px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    text-align: left;
-}
-
-#st-tenant-modal h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-}
-
-#st-tenant-modal ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-#st-tenant-modal li {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    cursor: pointer;
-}
-
-#st-tenant-modal li:hover {
-    background-color: #f9f9f9;
-}
-
-#st-tenant-modal li:last-child {
-    border-bottom: none;
-}
-
-#st-tenant-modal-close {
-    float: right;
-    cursor: pointer;
-    border: none;
-    background: none;
-    font-size: 1.5em;
-    line-height: 1;
-    padding: 0 5px;
 }
 
 /* Selectors (theme, language…) — MenuButton primitive */
@@ -393,16 +298,3 @@ footer a:hover {
     color: #e2e8f0;
 }
 
-
-.dark #st-tenant-selector-footer {
-    color: #e2e8f0;
-}
-
-.dark #st-tenant-modal {
-    background-color: #1e293b;
-    color: #e2e8f0;
-}
-
-.dark #st-tenant-modal li:hover {
-    background-color: #334155;
-}

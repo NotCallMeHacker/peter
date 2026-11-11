@@ -1,0 +1,339 @@
+/* Sign-in / sign-up card at /auth — the shell's white card in the board's
+   voice: same faces and hexes as projects.css (Plus Jakarta Sans + IBM Plex
+   Mono, indigo icon gradient, focus blue). */
+
+@import "@fontsource/plus-jakarta-sans/400.css";
+@import "@fontsource/plus-jakarta-sans/600.css";
+@import "@fontsource/plus-jakarta-sans/700.css";
+@import "@fontsource/plus-jakarta-sans/800.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+
+.auth {
+    padding: 40px 40px 44px;
+    text-align: left;
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.auth-head {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 26px;
+}
+
+.auth-mark {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    background: linear-gradient(160deg, #343a87, #2b2f6b);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.02em;
+}
+
+.auth h1 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: #1f2340;
+    text-wrap: balance;
+}
+
+.auth-intro {
+    margin: 0;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: #454c72;
+}
+
+/* Segmented sign-in / sign-up switch. */
+.auth-tabs {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    margin-bottom: 20px;
+    border: 1px solid #e8eaf0;
+    border-radius: 11px;
+    background: #f6f7f9;
+}
+
+.auth-tabs button {
+    padding: 7px 16px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #5a648f;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.auth-tabs button:hover {
+    color: #1f2340;
+}
+
+.auth-tabs button.is-active {
+    background: #ffffff;
+    color: #1f2340;
+    box-shadow: 0 1px 2px rgba(31, 35, 64, 0.08);
+}
+
+.auth-tabs button:focus-visible {
+    outline: 2px solid #3b66e8;
+    outline-offset: 1px;
+}
+
+.auth-error {
+    margin: 0 0 16px;
+    padding: 10px 14px;
+    border: 1px solid #f1c9c1;
+    border-radius: 10px;
+    background: #fff8f5;
+    color: #b3452a;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.auth-note {
+    margin: 0 0 16px;
+    padding: 10px 14px;
+    border: 1px solid #d9e0f3;
+    border-radius: 10px;
+    background: #eef1ff;
+    color: #454c72;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.auth-field > span {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #4e5580;
+}
+
+.auth-field > span em {
+    font-style: normal;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #8a90b5;
+}
+
+.auth-field input {
+    padding: 11px 13px;
+    border: 1px solid #dfe3ee;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #1f2340;
+    font: inherit;
+    font-size: 14px;
+    line-height: 1.4;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.auth-field input::placeholder {
+    color: #a6abcd;
+}
+
+.auth-field input:hover {
+    border-color: #c6cbe0;
+}
+
+.auth-field input:focus {
+    outline: none;
+    border-color: #3b66e8;
+    box-shadow: 0 0 0 3px rgba(59, 102, 232, 0.16);
+}
+
+.auth-submit {
+    margin-top: 4px;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 10px;
+    background: linear-gradient(160deg, #343a87, #2b2f6b);
+    color: #ffffff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        transform 0.1s ease;
+}
+
+.auth-submit:hover:not(:disabled) {
+    background: linear-gradient(160deg, #3d45a0, #33387a);
+}
+
+.auth-submit:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.auth-submit:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.auth-submit:focus-visible {
+    outline: 2px solid #3b66e8;
+    outline-offset: 2px;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 24px 0 16px;
+    color: #8a90b5;
+    font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #e8eaf0;
+}
+
+.auth-oauth {
+    display: flex;
+    gap: 10px;
+}
+
+.auth-oauth-btn {
+    flex: 1;
+    padding: 11px 14px;
+    border: 1px solid #dfe3ee;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #1f2340;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+.auth-oauth-btn:hover {
+    background: #f6f7f9;
+}
+
+.auth-oauth-btn:focus-visible {
+    outline: 2px solid #3b66e8;
+    outline-offset: 2px;
+}
+
+@media (max-width: 560px) {
+    .auth {
+        padding: 28px 20px 32px;
+    }
+
+    .auth h1 {
+        font-size: 26px;
+    }
+
+    .auth-oauth {
+        flex-direction: column;
+    }
+}
+
+/* Dark mode: follow the board's existing dark tokens. */
+.dark .auth h1 {
+    color: #e8eaf5;
+}
+
+.dark .auth-intro {
+    color: #b9bef2;
+}
+
+.dark .auth-tabs {
+    border-color: #2b3054;
+    background: #171b36;
+}
+
+.dark .auth-tabs button {
+    color: #8a90b5;
+}
+
+.dark .auth-tabs button:hover,
+.dark .auth-tabs button.is-active {
+    color: #e8eaf5;
+}
+
+.dark .auth-tabs button.is-active {
+    background: #232849;
+    box-shadow: none;
+}
+
+.dark .auth-field input {
+    border-color: #2b3054;
+    background: #171b36;
+    color: #e8eaf5;
+}
+
+.dark .auth-field input:hover {
+    border-color: #3a4070;
+}
+
+.dark .auth-note {
+    border-color: #2b3054;
+    background: #1b2042;
+    color: #b9bef2;
+}
+
+.dark .auth-error {
+    border-color: #6b2d1e;
+    background: #2a1713;
+    color: #f4a48e;
+}
+
+.dark .auth-oauth-btn {
+    border-color: #2b3054;
+    background: #171b36;
+    color: #e8eaf5;
+}
+
+.dark .auth-oauth-btn:hover {
+    background: #232849;
+}
+
+.dark .auth-divider::before,
+.dark .auth-divider::after {
+    background: #2b3054;
+}

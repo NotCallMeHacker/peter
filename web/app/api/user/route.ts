@@ -1,23 +1,17 @@
-import { ensureSuperTokensInit } from "@/app/config/backendConfigUtils";
-import { NextResponse, NextRequest } from "next/server";
-import { withSession } from "supertokens-node/nextjs";
+import { NextResponse } from "next/server";
+import { getSession } from "@/app/_lib/session";
+// GoTrue validates the token itself — no local JWT secret involved.
 
-ensureSuperTokensInit();
+// GoTrue validates the cookie token itself — no local JWT secret involved.
 
-export function GET(request: NextRequest) {
-    return withSession(request, async (err, session) => {
-        if (err) {
-            return NextResponse.json(err, { status: 500 });
-        }
-        if (!session) {
-            return new NextResponse("Authentication required", { status: 401 });
-        }
-
-        return NextResponse.json({
-            note: "Fetch any data from your application for authenticated user after using verifySession middleware",
-            userId: session.getUserId(),
-            sessionHandle: session.getHandle(),
-            accessTokenPayload: session.getAccessTokenPayload(),
-        });
+/** GET → the signed-in user as the app sees it; 401 when there is none. */
+export async function GET(): Promise<NextResponse> {
+    const { user } = await getSession();
+    if (!user) {
+        return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    }
+    return NextResponse.json({
+        userId: user.sub,
+        email: user.email ?? null,
     });
 }

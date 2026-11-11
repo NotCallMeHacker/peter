@@ -1,11 +1,13 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ThemeToggle } from "./themeToggle";
 import { LangSwitcher } from "./langSwitcher";
-import { SeparatorLine } from "../../assets/images";
-import { ComponentWrapper } from "../config/frontend";
 import { createServerTranslator, type Locale } from "../_lib/i18n";
 
+/**
+ * Top bar + page frame for every route. The chrome is brand-neutral now that
+ * SuperTokens is gone: the wordmark points home, and the nav keeps the docs
+ * links (repo + Next.js docs) with theme and language toggles.
+ */
 export function AppShell({ children, locale }: { children: React.ReactNode; locale: Locale }) {
     const { t } = createServerTranslator(locale, "common");
 
@@ -13,13 +15,13 @@ export function AppShell({ children, locale }: { children: React.ReactNode; loca
         <div className="App app-container">
             <header>
                 <nav className="header-container">
-                    <Link href="/">
-                        <img src="/ST.svg" alt="SuperTokens" />
+                    <Link href="/" className="brand-mark" aria-label="peter">
+                        peter
                     </Link>
                     <ul className="header-container-right">
                         <li>
                             <a
-                                href="https://supertokens.com/docs//"
+                                href="https://nextjs.org/docs"
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
@@ -28,7 +30,7 @@ export function AppShell({ children, locale }: { children: React.ReactNode; loca
                         </li>
                         <li>
                             <a
-                                href="https://github.com/supertokens/create-supertokens-app"
+                                href="https://github.com/"
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
@@ -45,19 +47,10 @@ export function AppShell({ children, locale }: { children: React.ReactNode; loca
                 </nav>
             </header>
             <div className="fill" id="home-container">
-                <ComponentWrapper>
-                    <>
-                        {children}
-                        <footer>
-                            Built with ❤️ by the folks at{" "}
-                            <a href="https://supertokens.io" target="_blank" rel="noopener noreferrer">
-                                supertokens.com
-                            </a>
-                            .
-                        </footer>
-                        <Image className="separator-line" src={SeparatorLine} alt="separator" />
-                    </>
-                </ComponentWrapper>
+                {children}
+                <footer>
+                    Built with ❤️ · Supabase Auth · Next.js
+                </footer>
             </div>
         </div>
     );
