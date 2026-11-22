@@ -109,6 +109,7 @@ Composite PK on `(issueId, labelId)`.
 
 ## log
 represents a project-wide audit log entry covering project, column, label, issue, comment and agent-task events
+TODO: actorId should be extended, as automations, system or agents can trigger events
 - id: PK, integer NOT NULL
 - projectId: FK → project.id, integer NOT NULL ON DELETE CASCADE
 - actorId: FK → user.id, nullable ON DELETE SET NULL
@@ -187,7 +188,7 @@ represents a task that was delegated to an agent
     - "waiting" // the task is waiting (e.g. after a question has been answered)
     - "completed" // the task has been completed by the runner
     - "cancelled" // the task has been cancelled
-    - "paused" // the task has been paused (e.g. waiting for a human to answer a question, or waiting for a human to resume the task, waiting for a human to fix an error, waiting for a human to unpause the task, etc.)
+    - "paused" // the task has been paused (e.g. waiting for a human to resume the task, waiting for a human to fix an error, etc.)
 - statusDetail: Enum | null: // reason / sub-state for blocked or terminal error conditions
     - "question" // the task is waiting for a question to be answered by the user
     - "stuck" // the agent is marked as stuck by a decision model; it hasn't made progress and is not expected to complete in its current state
