@@ -7,6 +7,10 @@ const nextConfig = {
     watchOptions: {
         pollIntervalMs: 1000,
     },
+    experimental: {
+        // Allow the Next.js agent upgrade flow to apply security updates.
+        agentUpgrade: "security",
+    },
 };
 
 module.exports = nextConfig;
