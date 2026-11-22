@@ -85,6 +85,12 @@
             "improvement": "Verbesserung",
             "chore": "Chore",
             "docs": "Doku"
+        },
+        "dnd": {
+            "moveIssue": "Verschieben: Aufgabe",
+            "moveColumn": "Verschieben: Spalte",
+            "moveFailed": "Die neue Reihenfolge konnte nicht gespeichert werden.",
+            "locked": "Diese Aufgabe ist gesperrt und kann nicht verschoben werden."
         }
     }
 }

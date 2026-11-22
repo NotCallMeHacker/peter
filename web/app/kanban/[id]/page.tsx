@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { RequireSession } from "../../_components/requireSession";
 import { loadBoard } from "../../_lib/kanbanRepo";
-import { toInternal } from "../../_lib/idConversion";
+import { parsePublicId } from "../../_lib/idConversion";
 import KanbanPage from "../board";
 import "../board.css";
 
@@ -14,21 +14,10 @@ import "../board.css";
  */
 export default async function KanbanRoute({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const internalId = parsePublicId(id);
+    const internal = parsePublicId(id);
+    if (internal === null) notFound();
 
-    return <RequireSession>{(session) => <Board ownerId={session.sub ?? ""} internalId={internalId} />}</RequireSession>;
-}
-
-/** Public id → internal project id; anything unusable is a 404. */
-function parsePublicId(publicId: string): number {
-    let internal: number | undefined;
-    try {
-        internal = Number.parseInt(toInternal(publicId), 10);
-    } catch {
-        internal = undefined; // not a digit string — no such project
-    }
-    if (internal === undefined || !Number.isFinite(internal) || internal < 0) notFound();
-    return internal;
+    return <RequireSession>{(session) => <Board ownerId={session.sub ?? ""} internalId={internal} />}</RequireSession>;
 }
 
 /** Loads the board only when the project belongs to the signed-in user. */

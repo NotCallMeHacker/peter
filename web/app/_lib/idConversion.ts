@@ -152,3 +152,13 @@ export function toInternal(id: number | string): string {
   const plain = feistelDecrypt(digitsFromString(raw));
   return digitsToString(plain);
 }
+
+/** Public id → internal integer id, or `null` when unusable. Never throws. */
+export function parsePublicId(id: string): number | null {
+  try {
+    const internal = Number.parseInt(toInternal(id), 10);
+    return Number.isInteger(internal) && internal >= 0 ? internal : null;
+  } catch {
+    return null;
+  }
+}

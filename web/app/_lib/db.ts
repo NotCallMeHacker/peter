@@ -52,6 +52,16 @@ function getConfig(): Config {
 }
 
 /**
+ * The browser-facing Supabase config (`SUPABASE_URL`, `SUPABASE_ANON_KEY`)
+ * — only `/api/kanban/realtime/token` hands this to the client, and it
+ * throws when unset rather than shipping an empty key. Never re-export
+ * anything else from here; the access token stays on the server.
+ */
+export function getSupabasePublicConfig(): { url: string; anonKey: string } {
+    return getConfig();
+}
+
+/**
  * Cached clients keyed by the access token (tokens rotate on refresh, so the
  * key rotates with them and no stale Authorization header can survive).
  */

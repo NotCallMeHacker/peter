@@ -733,3 +733,76 @@ body:has(.kb)>.app-container {
     }
 
 }
+
+/* ── drag & drop (dnd-kit) ───────────────────────────────────── */
+/* The card is the issue drag surface; the column pill is the column
+   handle. Additive only — every class above keeps its look. */
+.card {
+    cursor: grab;
+}
+
+.card--locked {
+    cursor: default;
+}
+
+/* The dragged card's origin slot: dimmed, no shadow, dashed outline. */
+.card--dragging {
+    opacity: 0.4;
+    border-style: dashed;
+    box-shadow: none;
+    transform: none;
+    cursor: grabbing;
+}
+
+/* Empty drop slot inside a column being targeted (12px rhythm kept). */
+.card--placeholder {
+    min-height: 76px;
+    border: 1px dashed var(--kb-line-hover);
+    background: transparent;
+    box-shadow: none;
+}
+
+.kb-col--drop-target {
+    background: rgba(76, 144, 243, 0.07);
+    outline: 2px dashed var(--kb-pill-blue);
+    outline-offset: -2px;
+}
+
+.pill--handle {
+    cursor: grab;
+    touch-action: none;
+}
+
+.pill--handle:active {
+    cursor: grabbing;
+}
+
+/* DragOverlay copies — lifted card / lifted pill. The wrapper is rendered at
+   the source's measured width (board.tsx), so both fill it exactly: the pill
+   keeps its full column width while lifted (no shrink to fit-content), and
+   the card matches its grid cell. */
+.kb-overlay {
+    pointer-events: none;
+    /* fallback when measurement failed */
+    width: min(300px, 72vw);
+}
+
+.kb-overlay .card {
+    width: 100%;
+    cursor: grabbing;
+    box-shadow: 0 18px 42px rgba(31, 35, 64, 0.24);
+    transform: rotate(1.2deg);
+}
+
+.kb-overlay .pill {
+    width: 100%;
+    box-shadow: 0 18px 42px rgba(31, 35, 64, 0.24);
+    transform: rotate(1.2deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kb-overlay .card,
+    .kb-overlay .pill {
+        transform: none;
+    }
+}

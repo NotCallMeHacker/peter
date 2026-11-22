@@ -85,6 +85,12 @@
             "improvement": "improvement",
             "chore": "chore",
             "docs": "docs"
+        },
+        "dnd": {
+            "moveIssue": "Move issue",
+            "moveColumn": "Move column",
+            "moveFailed": "Could not save the new order.",
+            "locked": "This issue is locked and cannot be moved."
         }
     }
 }

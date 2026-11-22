@@ -29,7 +29,7 @@ import type { AgentTaskAttributes, StatusDetail } from "../../db/models/agentTas
 import type { LogAttributes } from "../../db/models/log";
 
 import { appSchema } from "./db";
-import { toPublic } from "./idConversion";
+import { parsePublicId, toPublic } from "./idConversion";
 import type { Board, ChatMessage, Column, ColumnKey, HeroProject, Issue, IssueType } from "../kanban/data";
 
 /* ------------------------------------------------------------------ */
@@ -149,20 +149,11 @@ export async function listProjects(ownerId: string): Promise<ProjectListItem[]> 
  * even be used to probe which projects exist.
  */
 export async function loadBoard(ownerId: string, internalId: number): Promise<Board | null> {
+    const owned = await ownedProject(ownerId, internalId);
+    if (!owned) return null;
+    const { project, group } = owned;
+
     const db = await appSchema();
-    const projectRes = await db
-        .from("Projects")
-        .select("*")
-        .eq("id", internalId)
-        .eq("deleted", false)
-        .maybeSingle();
-    const project = row<ProjectRow>("Projects", projectRes);
-    if (!project) return null;
-
-    const groupRes = await db.from("Groups").select("*").eq("id", project.groupId).maybeSingle();
-    const group = row<GroupRow>("Groups", groupRes);
-    if (!group || group.ownerId !== ownerId) return null;
-
     const [columnsRes, labelsRes] = await Promise.all([
         db.from("Columns").select("*").eq("projectId", project.id).eq("deleted", false).order("position"),
         db.from("Labels").select("*").eq("projectId", project.id).eq("deleted", false),
@@ -237,8 +228,10 @@ export async function loadBoard(ownerId: string, internalId: number): Promise<Bo
             );
 
         return {
+            uid: toPublic(column.id),
             key: columnKey(column),
             label: column.name,
+            color: column.color ?? undefined,
             count: cardIssues.length,
             running: cardIssues.filter((card) => card.run?.state === "running").length,
             delegated: cardIssues.filter((card) => card.run !== undefined).length || undefined,
@@ -272,10 +265,13 @@ function viewIssue(
         .find((name): name is IssueType => name !== undefined && ISSUE_TYPES.includes(name as IssueType));
 
     const view: Issue = {
+        uid: toPublic(issue.id),
         id: code(issue.id),
         title: issue.name,
         date: stamp(issue.updatedAt ?? issue.createdAt),
     };
+
+    if (issue.locked) view.locked = true;
 
     if (type) view.type = type;
     if (task) {
@@ -515,4 +511,112 @@ function ago(iso: string): string {
     if (minutes < 60) return `${Math.max(minutes, 1)}M`;
     if (minutes < 60 * 24) return `${Math.round(minutes / 60)}H`;
     return new Date(iso).toLocaleDateString([], { month: "short", day: "numeric" }).toUpperCase();
+}
+
+/* ================================================================== */
+/* WRITE PATH — kanban drag & drop (app/api/kanban/*)                  */
+/* ------------------------------------------------------------------ */
+/* Via the SECURITY INVOKER RPCs `app.move_issue` / `app.reorder_      */
+/* columns`, so RLS `update_own_rows` stays the authority. The SQL's    */
+/* 'not found' / 'issue is locked' / 'bad order' errors map to the      */
+/* literal results below; anything else throws (route → 500).          */
+/* ================================================================== */
+
+/** SQL exception texts raised by `app.move_issue` / `app.reorder_columns`. */
+const SQL_NOT_FOUND = "not found";
+const SQL_LOCKED = "issue is locked";
+const SQL_BAD_ORDER = "bad order";
+
+/** Project → group → owner ownership check, by internal id. */
+async function ownedProject(
+    ownerId: string,
+    internalId: number
+): Promise<{ project: ProjectRow; group: GroupRow } | null> {
+    const db = await appSchema();
+    const projectRes = await db
+        .from("Projects")
+        .select("*")
+        .eq("id", internalId)
+        .eq("deleted", false)
+        .maybeSingle();
+    const project = row<ProjectRow>("Projects", projectRes);
+    if (!project) return null;
+
+    const groupRes = await db.from("Groups").select("*").eq("id", project.groupId).maybeSingle();
+    const group = row<GroupRow>("Groups", groupRes);
+    if (!group || group.ownerId !== ownerId) return null;
+    return { project, group };
+}
+
+/**
+ * Ciphered project id → internal id when the project exists and is owned by
+ * `sub`; `null` for unknown and foreign projects alike, so routes can 404
+ * without revealing which projects exist.
+ */
+export async function resolveProjectOwned(sub: string, publicId: string): Promise<number | null> {
+    const internalId = parsePublicId(publicId);
+    if (internalId === null) return null;
+    return (await ownedProject(sub, internalId)) === null ? null : internalId;
+}
+
+/**
+ * Move one issue to 0-based `index` in `toColumn`'s list (excluding the
+ * issue itself) via `app.move_issue`. `"locked"` = the issue must not move.
+ * Ownership is enforced by the RPC itself (`app.owns_project` + RLS) — the
+ * project is derived from the issue, so callers only need a 404 pre-check
+ * (see `resolveProjectOwned`).
+ */
+export async function moveIssue(
+    issueUid: string,
+    toColumnUid: string,
+    index: number
+): Promise<"ok" | "not_found" | "locked"> {
+    const issueId = parsePublicId(issueUid);
+    const toColumnId = parsePublicId(toColumnUid);
+    if (issueId === null || toColumnId === null) return "not_found";
+
+    const db = await appSchema();
+    const res = await db.rpc("move_issue", {
+        p_issue_id: issueId,
+        p_to_column_id: toColumnId,
+        p_index: index,
+    });
+    if (!res.error) return "ok";
+
+    const message = res.error.message;
+    if (message.includes(SQL_LOCKED)) return "locked";
+    // A target column outside the project raises 'bad order' in the SQL —
+    // from this API's perspective that is simply an unknown column (404).
+    if (message.includes(SQL_NOT_FOUND) || message.includes(SQL_BAD_ORDER)) return "not_found";
+    throw new Error(`Supabase: could not move issue (${message})`);
+}
+
+/**
+ * Persist the full column order (a permutation of the project's live column
+ * uids) via `app.reorder_columns`. An unparseable uid makes the order a
+ * non-permutation — `"bad_order"`, same as the SQL's own check. Ownership is
+ * enforced by the RPC itself, as in `moveIssue`.
+ */
+export async function reorderColumns(
+    projectId: number,
+    columnUids: string[]
+): Promise<"ok" | "not_found" | "bad_order"> {
+    const columnIds: number[] = [];
+    for (const uid of columnUids) {
+        const id = parsePublicId(uid);
+        if (id === null) return "bad_order";
+        columnIds.push(id);
+    }
+
+    const db = await appSchema();
+    const res = await db.rpc("reorder_columns", {
+        p_project_id: projectId,
+        p_column_ids: columnIds,
+    });
+    if (!res.error) return "ok";
+
+    const message = res.error.message;
+    if (message.includes(SQL_BAD_ORDER)) return "bad_order";
+    if (message.includes(SQL_NOT_FOUND)) return "not_found";
+    throw new Error(`Supabase: could not reorder columns (${message})`);
 }
