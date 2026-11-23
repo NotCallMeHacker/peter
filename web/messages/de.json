@@ -36,6 +36,12 @@
         "confirmationSent": "Prüfe dein Postfach, um deine E-Mail-Adresse zu bestätigen, und melde dich dann an.",
         "networkError": "Server nicht erreichbar — bitte erneut versuchen."
     },
+    "notFound": {
+        "title": "Seite nicht gefunden",
+        "intro": "Diese Seite existiert nicht oder du hast keinen Zugriff auf sie.",
+        "backToProjects": "Zurück zu den Projekten",
+        "home": "Startseite"
+    },
     "settings": {
         "title": "Einstellungen",
         "intro": "Design und Sprache für diesen Browser.",

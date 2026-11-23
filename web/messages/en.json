@@ -36,6 +36,12 @@
         "confirmationSent": "Check your inbox to confirm your email address, then sign in.",
         "networkError": "Could not reach the server — please try again."
     },
+    "notFound": {
+        "title": "Page not found",
+        "intro": "This page does not exist or you have no access to it.",
+        "backToProjects": "Back to projects",
+        "home": "Home"
+    },
     "settings": {
         "title": "Settings",
         "intro": "Theme and language for this browser.",
