@@ -3,7 +3,7 @@ import { Model, DataTypes, Sequelize } from 'sequelize';
 
 export type TriggeredBy = 'user' | 'automation' | 'githubAction' | 'githubCommand';
 export type TaskStatus = 'scheduled' | 'running' | 'waiting' | 'completed' | 'cancelled' | 'paused';
-export type StatusDetail = 'question' | 'stuck' | 'helpRequested' | 'failed' | 'runnerError' | 'webError';
+export type StatusDetail = 'question' | 'inReview' | 'stuck' | 'helpRequested' | 'failed' | 'runnerError' | 'webError';
 
 export interface AgentTaskAttributes {
     id: number;
@@ -64,7 +64,7 @@ const agentTaskFactory = (sequelize: Sequelize, DT: typeof DataTypes) => {
                 allowNull: false,
             },
             statusDetail: {
-                type: DT.ENUM('question', 'stuck', 'helpRequested', 'failed', 'runnerError', 'webError'),
+                type: DT.ENUM('question', 'inReview', 'stuck', 'helpRequested', 'failed', 'runnerError', 'webError'),
                 allowNull: true,
             },
             statusMessage: {

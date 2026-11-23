@@ -61,7 +61,8 @@ Example error response:
 
 # Schemas for communication between the supervisor and web interface
 - Everything is sent over WSS.
-- Metrics are directly sent to the DB and thereby not part of this schema. This is the **only** exception: the Supervisor may write metrics directly to the DB; everything else (status, logs, questions, ...) must go through the web interface.
+- We communicate with /api/agent-runner
+- Metrics and program logs are directly sent to the DB and thereby not part of this schema. This is the **only** exception: the Supervisor may write metrics and logs directly to the DB; everything else (status, agent-logs, questions, ...) must go through the web interface.
 - The web interface owns all state: it validates transitions and persists status to the DB. The Supervisor only *reports* observed state (S->W) and *executes* commands (W->S).
 - Every ID is internal, except when explicitly stated otherwise
 
@@ -156,9 +157,10 @@ Reports the observed state of the agent task to the web interface, which validat
 {
     "agentTaskId": number,
     "status": "running|waiting|completed|paused|cancelled", // ENUM from web/db/models/models.md#Models##agentTask.status
-    "statusDetail": "question|stuck|helpRequested|failed|runnerError|null", // ENUM from web/db/models/models.md#Models##agentTask.statusDetail
+    "statusDetail": "question|inReview|stuck|helpRequested|failed|runnerError|null", // ENUM from web/db/models/models.md#Models##agentTask.statusDetail
     "statusMessage": "string|null", // further details about the status (max 1000 chars)
     "questions": QUESTION|null,
+    "reviewSummary": "string|null", // the round's review summary (markdown: what changed and why, max 10000 chars); required when statusDetail is "inReview", null otherwise
     "data": {}|null, // full data package (up to 10MB)
 }
 ```
@@ -166,8 +168,13 @@ For status:
 - The WebError can only be produced on the Web Interface, so the Supervisor cant send it
 - The scheduled status is the default when starting a new Task, so we also cant send it
 - The cancelled status is also used for critical errors in both the supervisor, the runtime or the agent runtime. The RunnerError is to be set in those cases.
-- Paused means the container still exists and is used whenever the agent runtime isn't doing anything and isn't waiting. May use Docker pausing after timeout
-- Waiting may use docker pausing after timeout
+- Paused means the user paused the task. The container still exists and may be Docker-paused after timeout
+- Waiting means the task is blocked on human interaction (question, inReview, helpRequested). The container stays alive so the round can resume with warm context and may be Docker-paused after timeout
+- inReview is always paired with waiting: the round is finished and the container idles (it may be paused) until the review resolves 
+    - request changes -> waiting -> running
+    - approve -> merge -> completed
+- question is also paired with waiting
+- When `statusDetail` is `"inReview"`, `reviewSummary` carries the round's summary (markdown: what changed and why, max 10000 chars — the comment length limit). The web interface persists it as a special review comment on the issue (authored by the agent) [#11](https://github.com/NotCallMeHacker/peter/issues/11), so the reviewer sees what this round changed and why without reading raw logs. The comment becomes part of the issue discussion and is therefore included in `task.discussion` on the next `agent.new` and in `agent.feedback`. This was previously a separate `agent.review` message sent alongside `agent.status`; it is now part of this payload so one message carries the whole state change (web implementations must reject a `waiting`/`inReview` status update without a `reviewSummary`).
 
 Flow: 
 - scheduled -> cancelled|running 
@@ -204,7 +211,7 @@ Commands the Supervisor to act on the container (pause, resume, cancel). The web
     "status": "paused|completed|cancelled|running", // ENUM from web/db/models/models.md#Models##agentTask.status
 }
 ```
-status running can only be set, when old status is paused
+status running can only be set, when old status is paused or waiting (resume after a user pause, or after the review resolved with request changes)
 
 ## W->S | Agent Answer
 - `type`: `request`
@@ -220,6 +227,20 @@ Sends the answer to a question from the agent
     "answerText": "string|null", // free text answer
     "selectedOptions": ["string"], // selected options from the question
     "uploadedFiles": ["string"], // Placeholder for later use
+}
+```
+
+## W->S | Agent Feedback
+- `type`: `request`
+- `action`: `agent.feedback`
+- Response payload: `null`
+
+Sends the review feedback to the agent so it can address it. Sent while the task is `waiting`/`inReview`, before the `agent.status` request that resumes it (`waiting -> running`). The Supervisor delivers the comments to the container; it does not change the status itself.
+
+```json
+{
+    "agentTaskId": number,
+    "comments": DISCUSSION // review comments to address, same shape as agent.new task.discussion
 }
 ```
 

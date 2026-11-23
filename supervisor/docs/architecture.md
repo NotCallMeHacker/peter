@@ -15,13 +15,19 @@ Starts/stops the agent runtimes and manages the communication with the container
 - For later versions: 
     - ability to publish ports for human interaction with the agent
     - Proxy for the agent to access the internet (with restrictions)
-- Supervisor <-> Web Interface communication is done via a WSS connection, using the schemas defined in [schemas.md](schemas.md)
+- Supervisor <-> Web Interface communication is done via a WSS connection, using the schemas defined in [webCommunicationSchemas.md](webCommunicationSchemas.md)
+- For later versions: Manage state backups and run logs to reconstruct containers after crashes or reboots
+- sets up and mounts the /workspace, pi logs and general logs
+- /workspace is a git workspace but the .git is excluded from the mount
+
+
 
 ### Runtime (in container)
 
 #### Container
 - Minimal Filesystem
-- only /workspace, /tmp, log dirs and the pi code directories are writable
+- only /workspace, /tmp, log dirs and the pi code/agent runtime directories are writable
+- no git access or repo, all managed by the Supervisor
 - can't access the host filesystem or network
 - can access the internet (host machine public range is blocked to prevent access to the host machine)
 - has it's own loopback network interface
@@ -41,3 +47,5 @@ Starts/stops the agent runtimes and manages the communication with the container
 - The border is a component that runs in the container and acts as a bridge between the agent and the supervisor
 - handles communication between the two, including the log stream, interactive sessions, and the agent's Git MCP
 - sets up the agent's environment
+- Uses [Agent Client Protocol](https://agentclientprotocol.com/protocol/v1/overview/) to manage and interact with all the agent runtimes like Pi and OMP using the [Typescript library](https://agentclientprotocol.github.io/typescript-sdk/)
+- runs a "fake" git MCP so the agent's only options are read only or a commit in it's own branch

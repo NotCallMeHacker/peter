@@ -185,12 +185,13 @@ represents a task that was delegated to an agent
 - status: Enum NOT NULL:
     - "scheduled" // the task is scheduled for a runner
     - "running" // the task is currently running on a runner
-    - "waiting" // the task is waiting (e.g. after a question has been answered)
+    - "waiting" // the task is blocked on human interaction (question, review, help requested); the container stays alive so the round can resume
     - "completed" // the task has been completed by the runner
     - "cancelled" // the task has been cancelled
-    - "paused" // the task has been paused (e.g. waiting for a human to resume the task, waiting for a human to fix an error, etc.)
+    - "paused" // the task was paused by the user; the container still exists and resumes via paused -> running
 - statusDetail: Enum | null: // reason / sub-state for blocked or terminal error conditions
     - "question" // the task is waiting for a question to be answered by the user
+    - "inReview" // the task is waiting for a human to review the output; always paired with status "waiting"
     - "stuck" // the agent is marked as stuck by a decision model; it hasn't made progress and is not expected to complete in its current state
     - "helpRequested" // Human help has been requested by the agent or the decision model; the task is waiting for a human to intervene
     - "failed" // the task has failed, as the agent couldn't complete it
