@@ -16,3 +16,5 @@ DESIGN.md
 PRODUCT.md
 package.json
 package-lock.json
+*/node_modules/*
+secrets/*

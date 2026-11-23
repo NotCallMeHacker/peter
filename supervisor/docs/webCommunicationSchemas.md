@@ -61,7 +61,7 @@ Example error response:
 
 # Schemas for communication between the supervisor and web interface
 - Everything is sent over WSS.
-- We communicate with /api/agent-runner
+- We communicate with WSS://URL/api/agent-runner
 - Metrics and program logs are directly sent to the DB and thereby not part of this schema. This is the **only** exception: the Supervisor may write metrics and logs directly to the DB; everything else (status, agent-logs, questions, ...) must go through the web interface.
 - The web interface owns all state: it validates transitions and persists status to the DB. The Supervisor only *reports* observed state (S->W) and *executes* commands (W->S).
 - Every ID is internal, except when explicitly stated otherwise

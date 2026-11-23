@@ -36,6 +36,7 @@ app/
 ├── dashboard/               # session/debug surface
 ├── _lib/                    # auth, session, db (PostgREST), kanbanRepo, i18n, idConversion
 └── _components/             # appShell, requireSession, sidebar, toggles
+utils/startupScripts/       # host-run scripts (start-dev.mjs = `npm run dev`)
 db/                          # Sequelize models, migrations, seeders (host-run CLI)
 ```
 
@@ -45,8 +46,12 @@ db/                          # Sequelize models, migrations, seeders (host-run C
 # 1. stack (Supabase incl. GoTrue, Postgres, gateway) — from the repo root
 docker compose up -d
 
-# 2. web app, dev server on :3000
+# 2. web app, dev server on :3000 — also starts one supervisor instance
+#    from ../supervisor (it dials ws://localhost:3000/api/agent-runner)
 cd web && npm install && npm run dev
+
+#    web app only (no supervisor):            npm run dev:web
+#    supervisor only, e.g. in its own shell:  npm run dev:supervisor
 
 # migrations + sample boards (host-side, needs DB_* in the root .env)
 npm run db:migrate

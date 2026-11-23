@@ -3,7 +3,9 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "npm run stack:up && next dev",
+        "dev": "npm run stack:up && node utils/startupScripts/start-dev.mjs",
+        "dev:web": "npm run stack:up && SKIP_SUPERVISOR=1 node utils/startupScripts/start-dev.mjs",
+        "dev:supervisor": "cd ../supervisor && npm start",
         "db:migrate": "npx sequelize-cli db:migrate",
         "db:migrate:undo": "npx sequelize-cli db:migrate:undo",
         "db:schema:move": "node db/scripts/move-to-schema.js",
@@ -28,22 +30,26 @@
         "pg": "^8.23.1",
         "react": "^19",
         "react-dom": "^19",
-        "sequelize": "^6.37.8"
+        "sequelize": "^6.37.8",
+        "ws": "^8.23.0"
     },
     "devDependencies": {
         "@types/cookie": "^0.5.2",
         "@types/node": "^20",
         "@types/react": "^19",
         "@types/react-dom": "^19",
+        "@types/ws": "^8.18.2",
         "dotenv": "^16.4.5",
         "eslint": "^8",
         "eslint-config-next": "13.5.4",
         "sequelize-cli": "^6.6.5",
-        "ts-node": "^10.9.2"
+        "ts-node": "^10.9.2",
+        "tsx": "^4.23.15"
     },
     "allowScripts": {
         "@parcel/watcher@2.6.0": true,
         "@swc/core@1.16.21": true,
-        "unrs-resolver@1.12.2": true
+        "unrs-resolver@1.12.2": true,
+        "esbuild@0.28.2": true
     }
 }
