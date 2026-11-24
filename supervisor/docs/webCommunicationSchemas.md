@@ -75,7 +75,7 @@ Example error response:
 
 ## Transport and the ACP session
 - The Supervisor talks the Agent Client Protocol to Pi / OMP over the container's **stdio**, so Docker carries the protocol across the container wall.
-- `agent.feedback` is a new prompt in that same session; `agent.answer` resolves a pending Question MCP tool call; a task's model and key are configured into the runtime once, for the whole session.
+- `agent.feedback` is a new prompt in that same session; `agent.answer` resolves pending Question MCP tool calls (its `answers` array carries one entry per question); a task's model and key are configured into the runtime once, for the whole session.
 - The only other channel into the container is the MCP proxy's mounted UNIX socket, which carries the Supervisor's MCP servers (questions, review summary, git) without network access to the Supervisor.
 
 Definitions:
@@ -203,7 +203,7 @@ For status:
     - request changes -> waiting -> running
     - approve -> merge -> completed
 - question is also paired with waiting
-- The agent calls the Supervisor's Question MCP server (`ask_user_question`), the Supervisor forwards it here as `waiting`/`question`, and W->S `agent.answer` resolves that pending MCP call.
+- The agent calls the Supervisor's Question MCP server (`ask_user_question`), the Supervisor forwards it here as `waiting`/`question`, and W->S `agent.answer` resolves that pending MCP call with one answer entry per question in `questions`.
 - **The review summary is produced by the agent itself.** When a round is done the agent makes one final MCP call carrying the summary and only then pauses; the Supervisor reports it as `waiting`/`inReview` with `reviewSummary` filled.
 - If the Supervisor loses the Web Interface for 30s it pauses all containers and reports `paused` when the link returns. Reconnect/resume is a pause + re-attach, not a restart.
 - When `statusDetail` is `"inReview"`, `reviewSummary` carries the round's summary (markdown: what changed and why, max 10000 chars — the comment length limit). The web interface persists it as a special review comment on the issue (authored by the agent) [#11](https://github.com/NotCallMeHacker/peter/issues/11), so the reviewer sees what this round changed and why without reading raw logs. The comment becomes part of the issue discussion and is therefore included in `task.discussion` on the next `agent.new` and in `agent.feedback`. This was previously a separate `agent.review` message sent alongside `agent.status`; it is now part of this payload so one message carries the whole state change (web implementations must reject a `waiting`/`inReview` status update without a `reviewSummary`).
@@ -258,18 +258,36 @@ session are kept after completion.
 - `action`: `agent.answer`
 - Response payload: `null` (accepted) or `error`
 
-Sends the answer to a question from the agent. On the Supervisor this resolves the
-pending Question MCP tool call, which resumes the agent session.
+Sends the answers to the questions from the agent. On the Supervisor this resolves the
+pending Question MCP tool call, which resumes the agent session. A single `agent.answer`
+request answers **all** questions of the pending `agent.status` message: `ask_user_question`
+can ask several questions in one tool call, so the tool call only resolves once every
+pending question has an answer.
 
 ```json
 {
     "agentTaskId": number,
-    "questionId": "string",
-    "answerText": "string|null", // free text answer
-    "selectedOptions": ["string"], // selected options from the question
-    "uploadedFiles": ["string"], // Placeholder for later use
+    "answers": [ // one entry per pending question; order does not matter
+        {
+            "questionId": "string", // must equal the questionId of a pending question
+            "answerText": "string|null", // free text answer
+            "selectedOptions": ["string"], // selected options from the question
+            "uploadedFiles": ["string"] // Placeholder for later use
+        }
+    ]
 }
 ```
+
+Rules:
+- `answers` must cover every `questionId` of the pending `agent.status` `questions`
+  array, each `questionId` exactly once; a missing, unknown or duplicated `questionId`
+  is rejected with `code: "invalidPayload"`
+- `answers` must not be empty while a question is pending
+- `selectedOptions` may only contain options listed in the matching question;
+  `allowMultipleSelections: false` means at most one entry
+- `answerText` is required when the matching question has `allowFreeText: true` and no
+  option was selected, otherwise `null`
+- `uploadedFiles` is a placeholder for later use and is always `[]` for now
 
 ## W->S | Agent Feedback
 - `type`: `request`

@@ -137,8 +137,9 @@ managed and scaled by the orchestrator; it is not a host process. The current
   Supervisor**. It is not a special ACP permission request.
 - An agent call to `ask_user_question` becomes an S->W `agent.status` message with
   `status: "waiting"`, `statusDetail: "question"` and the `questions` array. The W->S
-  `agent.answer` request resolves the pending MCP tool call with the user's answer, and
-  the session resumes.
+  `agent.answer` request resolves the pending MCP tool call with the user's answers
+  (one entry per question in `questions`, all covered in a single request), and the
+  session resumes.
 - The same server exposes the **review summary** call: when a round is finished, the agent
   makes one final MCP call carrying the review summary, and only then pauses. The
   Supervisor turns that into the `waiting` / `inReview` `agent.status` message with
@@ -187,7 +188,8 @@ managed and scaled by the orchestrator; it is not a host process. The current
 4. The agent works. Questions become `waiting` / `question` messages; the review summary
    produces `waiting` / `inReview`.
 5. `agent.feedback` is delivered as a new prompt in the **same** ACP session and resumes
-   it; `agent.answer` resolves the pending question tool call.
+   it; `agent.answer` resolves the pending question tool call once every question of the
+  round is answered.
 6. W->S `agent.status` commands pause/resume/cancel; `completed` triggers the merge.
 7. Containers are destroyed (or kept, in test mode) when the task reaches a terminal
    state, or paused after the 30s Web Interface outage rule.
