@@ -21,7 +21,7 @@ import { readFileSync } from "node:fs";
 import WebSocket from "ws";
 import type { Config } from "./config.ts";
 import { type InstanceKeys, signChallenge } from "./keys.ts";
-import { envelope, parseEnvelope, type Envelope } from "./protocol.ts";
+import { envelope, errorFrame, parseEnvelope, SCHEMA_VERSION, type Envelope } from "./protocol.ts";
 
 /** How long to wait for B's challenge after the socket opens. */
 const CHALLENGE_TIMEOUT_MS = 10_000;
@@ -160,12 +160,20 @@ export async function connectOnce(opts: ConnectOptions): Promise<Session> {
 
     ws.on("message", (data, isBinary) => {
         if (isBinary) return; // schema frames are text-only
-        const frame = parseEnvelope(data.toString());
-        if (!frame) {
-            console.warn("[bridge] dropped malformed frame");
+        const parsed = parseEnvelope(data.toString());
+        if (!parsed.ok) {
+            if (parsed.reason === "unsupportedVersion" && parsed.id != null) {
+                // schema rule: wrong version on a request → error frame echoing the id
+                send(JSON.stringify(errorFrame("unsupportedSchemaVersion",
+                    `Unsupported schemaVersion; this supervisor speaks ${SCHEMA_VERSION}`, parsed.id)));
+                console.warn(`[bridge] rejected frame: unsupported schemaVersion (id=${parsed.id})`);
+            } else {
+                // malformed, or version-mismatch with no id
+                console.warn(`[bridge] dropped ${parsed.reason} frame`);
+            }
             return;
         }
-        dispatch(frame);
+        dispatch(parsed.frame);
     });
     ws.on("error", (e) => console.warn(`[bridge] socket error: ${e.message}`));
     ws.on("close", () => {

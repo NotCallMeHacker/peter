@@ -59,20 +59,32 @@ export function errorFrame(code: string, errorMessage: string, id: string | null
 }
 
 /**
- * Parse + structurally validate an inbound frame.
- * Returns null when the frame cannot be trusted (wrong shape, wrong version).
+ * Result of parsing an inbound frame: either the validated envelope or a
+ * failure with the reason and a best-effort correlation `id` (so a
+ * version-mismatched request can still be answered with an error frame).
  */
-export function parseEnvelope(raw: string): Envelope | null {
+export type ParseResult =
+    | { ok: true; frame: Envelope }
+    | { ok: false; reason: "malformed" | "unsupportedVersion"; id: string | null };
+
+/**
+ * Parse + structurally validate an inbound frame.
+ * Returns a ParseResult instead of null: `ok: false` carries the failure
+ * reason ("malformed" | "unsupportedVersion") and a best-effort `id`
+ * (null when JSON parsing itself failed).
+ */
+export function parseEnvelope(raw: string): ParseResult {
     let frame: Partial<Envelope> | null = null;
     try {
         frame = JSON.parse(raw) as Partial<Envelope>;
     } catch {
-        return null;
+        return { ok: false, reason: "malformed", id: null };
     }
-    if (!frame || typeof frame !== "object") return null;
-    if (frame.schemaVersion !== SCHEMA_VERSION) return null; // unknown major → reject
-    if (typeof frame.type !== "string" || !["message", "request", "response", "error"].includes(frame.type)) return null;
-    if (frame.id != null && typeof frame.id !== "string") return null;
-    if (frame.type === "request" && (typeof frame.action !== "string" || typeof frame.id !== "string")) return null;
-    return frame as Envelope;
+    if (!frame || typeof frame !== "object") return { ok: false, reason: "malformed", id: null };
+    const id = typeof frame.id === "string" ? frame.id : null; // best effort, even on failure
+    if (frame.schemaVersion !== SCHEMA_VERSION) return { ok: false, reason: "unsupportedVersion", id }; // unknown major → reject
+    if (typeof frame.type !== "string" || !["message", "request", "response", "error"].includes(frame.type)) return { ok: false, reason: "malformed", id };
+    if (frame.id != null && typeof frame.id !== "string") return { ok: false, reason: "malformed", id };
+    if (frame.type === "request" && (typeof frame.action !== "string" || typeof frame.id !== "string")) return { ok: false, reason: "malformed", id };
+    return { ok: true, frame: frame as Envelope };
 }

@@ -1,0 +1,51 @@
+# Supervisor stack — Track A, Wave 1 (plan.md §1 [W1/A]).
+# Usage:  docker compose -f docker-compose.supervisor.yml build supervisor
+#         docker compose -f docker-compose.supervisor.yml up -d supervisor
+#
+# NO `name:` on purpose: the file must join the existing `peter` project (directory
+# name) so the service lands on the shared `peter_default` network where `web` lives —
+# a separate project would isolate the Supervisor and make BRIDGE_URL unreachable.
+# No host docker.sock: the Supervisor gets its own inner daemon (DinD), privileged.
+# Run supervisor/scripts/build-agent-image.sh BEFORE the first build: the image
+# COPYs agent-image.tar out of the ./supervisor build context.
+
+services:
+  supervisor:
+    build:
+      context: ./supervisor
+      dockerfile: Dockerfile
+    # DinD: required together with the named /var/lib/docker volume below —
+    # overlay-on-overlay fails ("invalid argument") without the volume, and without
+    # privileged the inner dockerd cannot start at all.
+    privileged: true
+    # Mandatory: /var/lib/docker as a VOLUME (node:26-alpine declares none), otherwise
+    # nested `docker run` fails mounting overlay over the container's own layer.
+    volumes:
+      - peter-dind:/var/lib/docker
+      # Bind mounts, container paths = config.ts defaults (overridable via GIT_CACHE_DIR/
+      # WORKTREES_DIR/SOCKETS_DIR/LOGS_DIR). Host side under ./var/ so nothing collides
+      # with the repo. start.sh mkdir -p + chowns these to the app uid on every boot.
+      # The git cache and worktrees must be host binds (addressable as bind sources by
+      # the inner daemon), not named volumes.
+      - ./var/lib/peter/git:/var/lib/peter/git
+      - ./var/lib/peter/worktrees:/var/lib/peter/worktrees
+      - ./var/lib/peter/sockets:/var/lib/peter/sockets
+      - ./var/lib/peter/logs:/var/lib/peter/logs
+      # Env plumbing, mechanism (a): env_file injects the same variables into the
+      # process environment, the bind mount makes the file exist at the path
+      # start.sh passes to `node --env-file-if-exists=...` — one file, source of truth.
+      - ./.env:/run/config/.env:ro
+      # Stable instance identity: without this mount the keypair would be regenerated on
+      # every container recreate (the in-image default <repo>/secrets/instances does not
+      # exist in the image) and the bridge would reject the instance.
+      - ./secrets/instances:/run/secrets/instances
+    env_file: .env
+    environment:
+      # In-compose bridge address: `web` is the service name on the shared default
+      # network (overrides whatever ws://localhost the .env carries).
+      BRIDGE_URL: ws://web:3000/api/agent-runner
+      REGISTRY_DIR: /run/secrets/instances
+    # default network = the shared `peter_default` network (see the no-name note above).
+
+volumes:
+  peter-dind:

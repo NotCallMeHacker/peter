@@ -4,8 +4,10 @@
  * Boots the instance identity (Ed25519 keypair, generated once on first
  * start), then keeps one authenticated WSS session to B's /api/agent-runner
  * alive: connect -> sign B's nonce -> stay on, heartbeating supervisor.status
- * and answering B's requests (today: supervisor.status; agent.* →
- * notImplemented until the Docker runtime lands).
+ * and answering B's requests. Routing lives in actions.ts (agent.new,
+ * agent.status, supervisor.status → buildSupervisorStatus()); this module only
+ * wires the session to it — payload building has one source of truth:
+ * status/supervisorStatus.ts.
  *
  * WebSocket transport: the `ws` package (custom CA via BRIDGE_CA_PATH).
  *
@@ -15,50 +17,22 @@
  *   node --env-file-if-exists=../.env --env-file-if-exists=.env src/index.ts
  */
 
+import { handleMessage, handleRequest } from "./actions.ts";
 import { connectOnce, type Session, type SessionState } from "./client.ts";
 import { loadConfig } from "./config.ts";
 import { ensureKeys } from "./keys.ts";
-import { SCHEMA_VERSION, type Envelope } from "./protocol.ts";
+import { setSession } from "./status/emitter.ts";
+import { buildSupervisorStatus } from "./status/supervisorStatus.ts";
 
 const config = loadConfig();
 const keys = ensureKeys(config);
-
-/** `supervisor.status` payload (webCommunicationSchemas.md → S->W | Supervisor Status). */
-export interface SupervisorStatus {
-    status: "available" | "full" | "error" | "unavailable";
-    statusMessage: string;
-    data: Record<string, unknown> | null;
-}
-
-/** Current supervisor status payload. */
-function statusPayload(): SupervisorStatus {
-    return {
-        status: "available",
-        statusMessage: "bridge link up",
-        data: {
-            instanceId: config.instanceId,
-            schemaVersion: SCHEMA_VERSION,
-            uptimeSeconds: Math.round(process.uptime()),
-            startedAt: new Date(Date.now() - process.uptime() * 1000).toISOString(),
-        },
-    };
-}
-
-/** Answer schema requests from B. Throws to produce an error frame. */
-function handleRequest(frame: Envelope): SupervisorStatus {
-    if (frame.action === "supervisor.status") return statusPayload();
-    // Per schema rules: unknown action on a request → error code unknownAction.
-    const error = new Error(`No handler registered for action "${frame.action}"`) as Error & { code: string };
-    error.code = "unknownAction";
-    throw error;
-}
 
 let heartbeat: NodeJS.Timeout | undefined;
 
 function startHeartbeat(session: Session): void {
     stopHeartbeat();
     heartbeat = setInterval(() => {
-        session.send("supervisor.status", statusPayload());
+        session.send("supervisor.status", buildSupervisorStatus());
     }, config.heartbeatMs);
 }
 
@@ -86,21 +60,21 @@ async function runSession(): Promise<void> {
         config,
         keys,
         onRequest: handleRequest,
-        onMessage: (frame) => {
-            // Fire-and-forget from B: only supervisor.status broadcasts exist
-            // in the schema today; anything else is logged and dropped.
-            console.warn(`[supervisor] dropped message with action "${frame.action}"`);
-        },
+        onMessage: handleMessage,
         onStateChange: (state: SessionState) => {
             console.log(`[supervisor] session state: ${state}`);
         },
         onClose: () => {
+            // client.ts builds a NEW Session per reconnect → drop the stale holder.
+            setSession(null);
             stopHeartbeat();
             closed();
         },
     });
+    // Module-scoped holder: emitStatus reads it lazily; reassign on every reconnect.
+    setSession(session);
     // Initial heartbeat right away (B also asks once on its own).
-    session.send("supervisor.status", statusPayload());
+    session.send("supervisor.status", buildSupervisorStatus());
     startHeartbeat(session);
     // Resolves when the socket dies — the reconnect loop then takes over.
     await done;

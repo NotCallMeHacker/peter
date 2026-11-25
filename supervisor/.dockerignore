@@ -1,0 +1,12 @@
+# Build context is ./supervisor and serves BOTH builds: the supervisor image
+# (Dockerfile) and the agent image (Dockerfile.agent). Never exclude `agent/` —
+# wave 2's Dockerfile.agent COPYs agent/mcp-proxy.mjs from this same context.
+node_modules
+.env
+test/
+docs/
+# Build artifacts: exclude every tar, then put the agent image back — later lines win,
+# so `!agent-image.tar` re-includes what `*.tar` just dropped (and the supervisor
+# Dockerfile's `COPY agent-image.tar /opt/agent-image.tar` keeps working).
+*.tar
+!agent-image.tar

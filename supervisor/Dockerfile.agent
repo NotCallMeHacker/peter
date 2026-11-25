@@ -1,0 +1,41 @@
+# syntax=docker/dockerfile:1
+# Agent runtime image — the ONLY image a task container ever runs (plan.md §1 [W1/A]).
+# Deliberately minimal: NO git, NO dockerd, NO credentials. git is a Supervisor-only
+# binary and the Supervisor never mounts a repo, a token or its own socket dir in here —
+# the contract is exactly three mounts: /workspace, /home/agent/.pi/agent, /sockets/mcp.sock.
+FROM node:26-alpine
+
+# Versions verified against the npm registry before writing this file:
+#   npm view @earendil-works/pi-coding-agent version -> 1.6.0
+#   npm view pi-acp version                         -> 0.0.35
+# pi-acp declares engines.node >=20; the base image ships node 26.
+RUN npm install -g @earendil-works/pi-coding-agent@1.6.0 pi-acp@0.0.35
+
+# uid-1000 collision, decided: node:26-alpine already owns uid 1000 as `node`, so
+# `adduser -D -u 1000 -h /home/agent agent` alone fails ("uid 1000 in use"), and
+# busybox has no `usermod -l` (a rename is not portable). We DELETE the base `node`
+# user and recreate the runtime user as `agent`, still uid 1000 — the uid is what the
+# mount contract actually needs (host bind mounts arrive owned by uid 1000). Alternative
+# considered: reuse `node` with home kept at /home/node — simpler, but then the
+# PI_CODING_AGENT_DIR=/home/agent/... contract would live outside $HOME; deleting and
+# recreating keeps home, uid and contract aligned. `deluser --remove-home` also drops
+# /home/node so no uid-1000-owned stale dir survives the swap.
+RUN deluser --remove-home node \
+    && adduser -D -u 1000 -h /home/agent agent \
+    && mkdir -p /home/agent/.pi/agent /workspace /sockets \
+    && chown -R agent:agent /home/agent /workspace
+# /sockets stays root-owned on purpose: the per-task proxy socket is bind-mounted in as a
+# single file created by the Supervisor's uid. If that uid ever mismatches, chmod the
+# socket on the Supervisor side — do not loosen this image.
+
+# WAVE 2 — add when agent/mcp-proxy.mjs exists. Do NOT add it earlier: COPY of a
+# non-existent file fails the build.
+#   COPY agent/mcp-proxy.mjs /opt/mcp-proxy/proxy.mjs
+
+USER agent
+WORKDIR /workspace
+ENV PI_CODING_AGENT_DIR=/home/agent/.pi/agent
+
+# Foreground keep-alive so `docker run -d peter-agent:dev` stays up for the Supervisor
+# to exec into (busybox sleep accepts `infinity`).
+CMD ["sleep", "infinity"]

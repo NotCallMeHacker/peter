@@ -14,7 +14,11 @@ web/node_modules/*
 .impeccable/*
 DESIGN.md
 PRODUCT.md
-package.json
-package-lock.json
+/package.json
+/package-lock.json
+supervisor/agent-image.tar
 */node_modules/*
+
+# host bind-mount dirs for the supervisor container (docker-compose.supervisor.yml)
+/var/
 secrets/*
